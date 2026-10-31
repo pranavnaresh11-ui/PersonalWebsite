@@ -74,29 +74,65 @@ document.documentElement.classList.add('js');
   requestAnimationFrame(draw);
 })();
 
-// Greeting: type the intro line out character by character when the page opens.
+// Greeting: type the intro line out when the page opens, then glitch it now and then like a
+// hacked terminal. Every third glitch, "robotics research" briefly turns into an error.
 (() => {
   const p = document.querySelector('.typing');
-  const text = p.textContent;
+  const text = p.textContent.trim();
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const PHRASE = 'robotics research', ERROR = 'ERR::BAYESIAN_OPTIMIZATION', GLYPHS = '!<>-_\\/[]{}=+*^?#%01';
 
-  p.innerHTML = '<span class="sr-only"></span><span aria-hidden="true"><span class="done"></span><span class="caret"></span><span class="rest"></span></span>';
+  p.innerHTML = '<span class="sr-only"></span><span class="screen" aria-hidden="true"><span class="base"><span class="done"></span><span class="caret"></span><span class="rest"></span></span></span>';
   p.querySelector('.sr-only').textContent = text;
+  const screen = p.querySelector('.screen'), base = p.querySelector('.base');
   const typed = p.querySelector('.done'), left = p.querySelector('.rest');
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const el = (cls, txt = '') => Object.assign(document.createElement('span'), { className: cls, textContent: txt });
 
-  let n = reduceMotion ? text.length : 0;
+  let n = 0;
   const render = () => { typed.textContent = text.slice(0, n); left.textContent = text.slice(n); };
-  render();
-  if (n === text.length) return p.classList.add('typed-out');
+
+  const glitch = async () => {
+    // Rebuild the finished line with the phrase wrapped, plus red and cyan ghost copies for the colour split.
+    const i = text.indexOf(PHRASE);
+    if (i < 0) return;
+    base.replaceChildren(text.slice(0, i), el('swap', PHRASE), text.slice(i + PHRASE.length), el('caret'));
+    for (const cls of ['ghost r', 'ghost c']) screen.append(Object.assign(base.cloneNode(true), { className: cls }));
+    const swaps = screen.querySelectorAll('.swap');
+    const setSwap = (s, err) => swaps.forEach((s2) => { s2.textContent = s; s2.classList.toggle('err', err); });
+    const scramble = (s) => s.replace(/\S/g, () => GLYPHS[(Math.random() * GLYPHS.length) | 0]);
+
+    const burst = async (withError) => {
+      p.classList.add('glitch');
+      if (withError) {
+        for (let k = 0; k < 5; k++) { setSwap(scramble(PHRASE), false); await wait(50); }
+        setSwap(ERROR, true);
+        await wait(1000);
+        for (let k = 0; k < 4; k++) { setSwap(scramble(ERROR), true); await wait(50); }
+        setSwap(PHRASE, false);
+      } else {
+        await wait(160 + Math.random() * 220);
+      }
+      p.classList.remove('glitch');
+    };
+
+    await wait(500);
+    for (let count = 0; ; count++) {
+      await burst(count % 3 === 0);
+      await wait(2500 + Math.random() * 3500);
+    }
+  };
 
   // Slightly uneven keystrokes, with a beat after punctuation.
   const step = () => {
     n++;
     render();
-    if (n === text.length) return p.classList.add('typed-out');
-    setTimeout(step, /[!.,?]/.test(text[n - 1]) ? 380 : 55 + Math.random() * 75);
+    const ch = text[n - 1];
+    if (n < text.length) return setTimeout(step, /[!.]/.test(ch) ? 420 : ch === ',' ? 220 : 35 + Math.random() * 55);
+    p.classList.add('typed-out');
+    if (!reduceMotion) glitch();
   };
-  setTimeout(step, 700);
+  if (reduceMotion) { n = text.length - 1; step(); } else { render(); setTimeout(step, 700); }
 })();
 
 // Navigation: slide in the top bar once the home nav scrolls away, and highlight the section in view.

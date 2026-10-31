@@ -40,6 +40,23 @@ a:hover { color: var(--fg); }
 .typing .caret::after { content: ''; position: absolute; left: 2px; top: .1em; width: 2px; height: 1em; background: var(--fg); animation: caret 1s steps(1) infinite; }
 .typing.typed-out .caret::after { animation-delay: .4s; }
 @keyframes caret { 50% { opacity: 0; } }
+
+/* Glitch bursts: red/cyan ghost copies slice and shift over the text, with scanlines on top */
+.typing { position: relative; }
+.typing .screen, .typing .base { position: relative; display: block; }
+.typing .ghost { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.typing .ghost .caret { visibility: hidden; }
+.typing::after { content: ''; position: absolute; inset: -6px -10px; background: repeating-linear-gradient(transparent 0 2px, rgba(255, 255, 255, .07) 2px 3px); opacity: 0; pointer-events: none; }
+.typing.glitch::after { opacity: 1; }
+.typing.glitch .base { animation: jitter .2s steps(2) infinite; }
+.typing.glitch .ghost { opacity: .9; mix-blend-mode: screen; }
+.typing.glitch .ghost.r { color: #ff2a55; animation: slice-r .24s steps(1) infinite; }
+.typing.glitch .ghost.c { color: #19e6ff; animation: slice-c .3s steps(1) infinite; }
+.typing .swap.err { font: 500 .62em var(--mono); letter-spacing: .04em; color: #ff2a55; }
+.typing .base .swap.err { background: rgba(255, 42, 85, .14); outline: 1px solid rgba(255, 42, 85, .6); padding: 0 .25em; text-shadow: 2px 0 #19e6ff; }
+@keyframes jitter { 50% { transform: translateX(2px) skewX(-3deg); } }
+@keyframes slice-r { 0% { clip-path: inset(8% 0 72% 0); transform: translateX(-5px); } 25% { clip-path: inset(55% 0 22% 0); transform: translateX(4px); } 50% { clip-path: inset(82% 0 4% 0); transform: translateX(-3px); } 75% { clip-path: inset(30% 0 52% 0); transform: translateX(6px); } }
+@keyframes slice-c { 0% { clip-path: inset(62% 0 18% 0); transform: translateX(5px); } 30% { clip-path: inset(14% 0 66% 0); transform: translateX(-4px); } 60% { clip-path: inset(40% 0 40% 0); transform: translateX(3px); } 85% { clip-path: inset(76% 0 8% 0); transform: translateX(-6px); } }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* 3D object */
