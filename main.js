@@ -1,10 +1,11 @@
+document.documentElement.classList.add('js');
+
 // Wireframe sphere: lat/long grid, rotates continuously and tilts toward the cursor.
 (() => {
-  const stage = document.getElementById('stage');
+  const stage = document.getElementById('home');
   const canvas = document.getElementById('sphere');
   const ctx = canvas.getContext('2d');
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const isTouch = matchMedia('(hover: none)').matches;
 
   const LAT = 13, LON = 22, verts = [], edges = [];
   for (let i = 0; i <= LAT; i++) for (let j = 0; j < LON; j++) {
@@ -16,24 +17,17 @@
   }
 
   const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
-  let revealed = false;
+  let visible = true;
 
-  const setRevealed = (v) => { revealed = v; stage.classList.toggle('revealed', v); };
+  stage.addEventListener('mousemove', (e) => {
+    const r = stage.getBoundingClientRect();
+    mouse.x = (e.clientX - r.left) / r.width - 0.5;
+    mouse.y = (e.clientY - r.top) / r.height - 0.5;
+  });
+  stage.addEventListener('mouseleave', () => { mouse.x = 0; mouse.y = 0; });
 
-  if (isTouch) {
-    stage.addEventListener('click', (e) => {
-      if (e.target.closest('a')) return;
-      setRevealed(!revealed);
-    });
-  } else {
-    stage.addEventListener('mouseenter', () => setRevealed(true));
-    stage.addEventListener('mouseleave', () => setRevealed(false));
-    stage.addEventListener('mousemove', (e) => {
-      const r = stage.getBoundingClientRect();
-      mouse.x = (e.clientX - r.left) / r.width - 0.5;
-      mouse.y = (e.clientY - r.top) / r.height - 0.5;
-    });
-  }
+  // Skip drawing while the home section is scrolled out of view.
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(stage);
 
   const resize = () => {
     const dpr = window.devicePixelRatio || 1;
@@ -44,6 +38,9 @@
   new ResizeObserver(resize).observe(canvas);
 
   const draw = (ts) => {
+    requestAnimationFrame(draw);
+    if (!visible) return;
+
     const t = reduceMotion ? 0 : ts / 1000;
     const W = canvas.clientWidth, H = canvas.clientHeight;
     ctx.clearRect(0, 0, W, H);
@@ -51,7 +48,7 @@
     smooth.x += (mouse.x - smooth.x) * 0.06;
     smooth.y += (mouse.y - smooth.y) * 0.06;
 
-    const ay = t * (revealed ? 0.5 : 0.22) + smooth.x * 1.2;
+    const ay = t * 0.22 + smooth.x * 1.2;
     const ax = 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1;
     const ca = Math.cos(ay), sa = Math.sin(ay), cb = Math.cos(ax), sb = Math.sin(ax);
     const S = Math.min(W, H) * 0.36, cx = W / 2, cy = H / 2;
@@ -73,7 +70,32 @@
       ctx.lineTo(P[j][0], P[j][1]);
       ctx.stroke();
     }
-    requestAnimationFrame(draw);
   };
   requestAnimationFrame(draw);
+})();
+
+// Navigation: slide in the top bar once the home nav scrolls away, and highlight the section in view.
+(() => {
+  const topbar = document.getElementById('topbar');
+  new IntersectionObserver(([e]) => topbar.classList.toggle('show', !e.isIntersecting))
+    .observe(document.querySelector('.stage .nav'));
+
+  const links = document.querySelectorAll('.nav a, .topbar nav a');
+  const spy = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) {
+      links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+    }
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('[data-section]').forEach((s) => spy.observe(s));
+})();
+
+// Fade section content in as it scrolls into view.
+(() => {
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) {
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  }, { rootMargin: '0px 0px -10% 0px' });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
 })();
