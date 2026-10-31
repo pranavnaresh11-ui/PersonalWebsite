@@ -17,7 +17,7 @@ document.documentElement.classList.add('js');
   }
 
   const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
-  let visible = true;
+  let visible = true, jelly = 0;
 
   stage.addEventListener('mousemove', (e) => {
     const r = stage.getBoundingClientRect();
@@ -25,6 +25,7 @@ document.documentElement.classList.add('js');
     mouse.y = (e.clientY - r.top) / r.height - 0.5;
   });
   stage.addEventListener('mouseleave', () => { mouse.x = 0; mouse.y = 0; });
+  stage.addEventListener('pointerdown', () => { jelly = 0.09; });
 
   // Skip drawing while the home section is scrolled out of view.
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(stage);
@@ -45,19 +46,32 @@ document.documentElement.classList.add('js');
     const W = canvas.clientWidth, H = canvas.clientHeight;
     ctx.clearRect(0, 0, W, H);
 
-    smooth.x += (mouse.x - smooth.x) * 0.06;
-    smooth.y += (mouse.y - smooth.y) * 0.06;
+    const dx = mouse.x - smooth.x, dy = mouse.y - smooth.y;
+    smooth.x += dx * 0.06;
+    smooth.y += dy * 0.06;
+
+    // Jelly: moving the cursor (or clicking) sets the surface rippling, then it settles.
+    if (!reduceMotion) jelly = Math.min(0.09, jelly * 0.95 + Math.hypot(dx, dy) * 0.02);
 
     const ay = t * 0.22 + smooth.x * 1.2;
     const ax = 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1;
     const ca = Math.cos(ay), sa = Math.sin(ay), cb = Math.cos(ax), sb = Math.sin(ax);
-    const S = Math.min(W, H) * 0.36, cx = W / 2, cy = H / 2;
+    const S = Math.min(W, H) * 0.36, cx = W / 2;
+
+    // Bounce: small hops that squash wide and flat on landing and stretch a touch in the air.
+    // The bottom stays planted while it squashes.
+    const hop = reduceMotion ? 1 : Math.abs(Math.sin(t * 2.2));
+    const land = reduceMotion ? 0 : Math.pow(1 - hop, 6);
+    const sy = 1 - 0.13 * land + 0.03 * hop, sx = 1 + 0.09 * land - 0.015 * hop;
+    const cy = H / 2 + S * 0.06 - (reduceMotion ? 0 : hop * S * 0.12) + S * (1 - sy);
 
     const P = verts.map(([x, y, z]) => {
+      const k = 1 + jelly * Math.sin(y * 5 + t * 11) * Math.cos(x * 3 - t * 7);
+      x *= k; y *= k; z *= k;
       const x1 = x * ca - z * sa, z1 = x * sa + z * ca;
       const y1 = y * cb - z1 * sb, z2 = y * sb + z1 * cb;
       const f = 3 / (3 + z2);
-      return [cx + x1 * S * f, cy + y1 * S * f, z2];
+      return [cx + x1 * S * f * sx, cy + y1 * S * f * sy, z2];
     });
 
     ctx.lineWidth = 1;
