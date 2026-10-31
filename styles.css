@@ -34,6 +34,14 @@ a:hover { color: var(--fg); }
 .eyebrow { font: 400 10px var(--mono); color: var(--muted); letter-spacing: .5em; }
 .intro p { margin: 0; font: 300 30px/1.18 var(--sans); letter-spacing: -.02em; text-wrap: pretty; }
 
+/* Typed greeting: untyped text stays in the flow (transparent) so the line never reflows while typing */
+.typing .rest { color: transparent; }
+.typing .caret { position: relative; }
+.typing .caret::after { content: ''; position: absolute; left: 2px; top: .1em; width: 2px; height: 1em; background: var(--fg); animation: caret 1s steps(1) infinite; }
+.typing.typed-out .caret::after { animation-delay: .4s; }
+@keyframes caret { 50% { opacity: 0; } }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
 /* 3D object */
 .object { position: absolute; top: 50%; left: 50%; width: max(240px, min(620px, 70vh, calc(100vw - 2 * (340px + var(--pad) + 24px)))); aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; }
 .object canvas { width: 100%; height: 100%; display: block; }

@@ -74,6 +74,31 @@ document.documentElement.classList.add('js');
   requestAnimationFrame(draw);
 })();
 
+// Greeting: type the intro line out character by character when the page opens.
+(() => {
+  const p = document.querySelector('.typing');
+  const text = p.textContent;
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  p.innerHTML = '<span class="sr-only"></span><span aria-hidden="true"><span class="done"></span><span class="caret"></span><span class="rest"></span></span>';
+  p.querySelector('.sr-only').textContent = text;
+  const typed = p.querySelector('.done'), left = p.querySelector('.rest');
+
+  let n = reduceMotion ? text.length : 0;
+  const render = () => { typed.textContent = text.slice(0, n); left.textContent = text.slice(n); };
+  render();
+  if (n === text.length) return p.classList.add('typed-out');
+
+  // Slightly uneven keystrokes, with a beat after punctuation.
+  const step = () => {
+    n++;
+    render();
+    if (n === text.length) return p.classList.add('typed-out');
+    setTimeout(step, /[!.,?]/.test(text[n - 1]) ? 380 : 55 + Math.random() * 75);
+  };
+  setTimeout(step, 700);
+})();
+
 // Navigation: slide in the top bar once the home nav scrolls away, and highlight the section in view.
 (() => {
   const topbar = document.getElementById('topbar');
