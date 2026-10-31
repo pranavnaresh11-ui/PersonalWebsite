@@ -75,7 +75,7 @@ document.documentElement.classList.add('js');
 })();
 
 // Greeting: type the intro line out when the page opens, then glitch it now and then like a
-// hacked terminal. Every third glitch, "robotics research" briefly turns into an error.
+// hacked terminal. The first glitch briefly turns "robotics research" into an error.
 (() => {
   const p = document.querySelector('.typing');
   const text = p.textContent.trim();
@@ -118,7 +118,7 @@ document.documentElement.classList.add('js');
 
     await wait(500);
     for (let count = 0; ; count++) {
-      await burst(count % 3 === 0);
+      await burst(count === 0);
       await wait(2500 + Math.random() * 3500);
     }
   };
