@@ -114,6 +114,23 @@ document.documentElement.classList.add('js');
   document.querySelectorAll('[data-section]').forEach((s) => spy.observe(s));
 })();
 
+// Footer: hide it while the page is scrolling and bring it back once scrolling settles.
+// It stays hidden at the very bottom, where the page's own end footer takes over.
+(() => {
+  const footer = document.querySelector('.stage .footer');
+  let atEnd = false, timer;
+  new IntersectionObserver(([e]) => {
+    atEnd = e.isIntersecting;
+    footer.classList.toggle('away', atEnd);
+  }).observe(document.querySelector('.end'));
+
+  addEventListener('scroll', () => {
+    footer.classList.add('away');
+    clearTimeout(timer);
+    timer = setTimeout(() => footer.classList.toggle('away', atEnd), 350);
+  }, { passive: true });
+})();
+
 // Project drives: open a drive's card on hover (or keyboard focus); on touch screens a tap toggles it.
 (() => {
   const drives = [...document.querySelectorAll('.drive')];

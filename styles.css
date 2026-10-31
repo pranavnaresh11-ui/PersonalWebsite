@@ -49,8 +49,9 @@ a:hover { color: var(--fg); }
 .prompt { position: absolute; bottom: max(96px, calc(50% - min(310px, 35vh) - 28px)); left: 50%; transform: translateX(-50%); font: 400 11px/1 var(--mono); letter-spacing: .3em; color: var(--muted); white-space: nowrap; transition: color .2s; }
 .prompt:hover { color: var(--fg); }
 
-/* Footer */
-.footer { position: absolute; bottom: 40px; left: var(--pad); right: var(--pad); display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; padding-top: 20px; border-top: 1px solid #1c1c1c; }
+/* Footer: pinned to the bottom of the screen; slides away while scrolling and comes back once you stop */
+.footer { position: fixed; z-index: 9; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 20px var(--pad) 40px; background: linear-gradient(#1c1c1c, #1c1c1c) top center / calc(100% - 2 * var(--pad)) 1px no-repeat, rgba(0, 0, 0, .85); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); transition: transform .5s var(--ease), opacity .4s, visibility 0s; }
+.footer.away { transform: translateY(100%); opacity: 0; visibility: hidden; transition: transform .45s var(--ease), opacity .3s, visibility 0s .45s; }
 .brand { display: flex; gap: 28px; align-items: baseline; }
 .brand strong { font: 500 14px var(--sans); letter-spacing: .2em; }
 .brand span { font: 400 11px var(--mono); color: var(--muted); }
@@ -174,7 +175,7 @@ a:hover { color: var(--fg); }
   .intro p { font-size: 22px; }
   .object { top: 40%; width: min(92vw, 420px, 52svh); }
   .prompt { display: none; }
-  .footer { bottom: 24px; flex-direction: column-reverse; align-items: stretch; gap: 16px; }
+  .footer { padding-bottom: 24px; flex-direction: column-reverse; align-items: stretch; gap: 16px; }
   .brand { justify-content: space-between; }
   .social { justify-content: space-between; gap: 0; font-size: 11px; }
 
