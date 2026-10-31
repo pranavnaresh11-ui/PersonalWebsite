@@ -168,6 +168,68 @@ document.documentElement.classList.add('js');
   else { render(); setTimeout(step, 700); }
 })();
 
+// Background: faint electric-cyan and terminal-green streaks flying across the page.
+(() => {
+  const canvas = document.getElementById('streaks');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = canvas.getContext('2d');
+  const COLORS = ['25,230,255', '57,255,120'];
+  const ANGLE = -0.22, DX = Math.cos(ANGLE), DY = Math.sin(ANGLE);
+  let W = 0, H = 0, streaks = [], last = 0;
+
+  const resize = () => {
+    const dpr = window.devicePixelRatio || 1;
+    W = innerWidth; H = innerHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  addEventListener('resize', resize);
+  resize();
+
+  // Each streak starts off the left edge somewhere along the screen and flies up and to the right.
+  const spawn = (anywhere) => ({
+    x: anywhere ? Math.random() * W : -300,
+    y: Math.random() * (H + W * 0.25),
+    len: 80 + Math.random() * 220,
+    speed: 350 + Math.random() * 700,
+    alpha: 0.12 + Math.random() * 0.3,
+    width: Math.random() < 0.25 ? 1.6 : 1,
+    color: COLORS[Math.random() < 0.55 ? 0 : 1],
+  });
+  const COUNT = () => Math.round(Math.min(18, Math.max(8, (W * H) / 70000)));
+  for (let i = 0; i < COUNT(); i++) streaks.push(spawn(true));
+
+  const draw = (ts) => {
+    requestAnimationFrame(draw);
+    const dt = Math.min(0.05, (ts - last) / 1000 || 0);
+    last = ts;
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineCap = 'round';
+
+    streaks = streaks.filter((s) => s.x - s.len * DX < W + 50 && s.y - s.len * DY > -50);
+    while (streaks.length < COUNT()) streaks.push(spawn(false));
+
+    for (const s of streaks) {
+      s.x += DX * s.speed * dt;
+      s.y += DY * s.speed * dt;
+      const tx = s.x - DX * s.len, ty = s.y - DY * s.len;
+      const g = ctx.createLinearGradient(tx, ty, s.x, s.y);
+      g.addColorStop(0, `rgba(${s.color},0)`);
+      g.addColorStop(1, `rgba(${s.color},${s.alpha})`);
+      ctx.strokeStyle = g;
+      // A wide faint pass for glow, then the sharp line.
+      ctx.globalAlpha = 0.25;
+      ctx.lineWidth = s.width * 4;
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(s.x, s.y); ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.lineWidth = s.width;
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(s.x, s.y); ctx.stroke();
+    }
+  };
+  requestAnimationFrame(draw);
+})();
+
 // Navigation: slide in the top bar once the home nav scrolls away, and highlight the section in view.
 (() => {
   const topbar = document.getElementById('topbar');

@@ -14,6 +14,10 @@ html, body { margin: 0; background: var(--bg); color: var(--fg); font-family: va
 a { color: var(--fg); text-decoration: none; }
 a:hover { color: var(--fg); }
 
+/* Background streaks: fixed behind everything, content sits above */
+#streaks { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+main, .end { position: relative; z-index: 1; }
+
 /* ---------- Home ---------- */
 .stage { position: relative; min-height: 100vh; min-height: 100svh; overflow: hidden; }
 
