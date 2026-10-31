@@ -73,7 +73,8 @@ a:hover { color: var(--fg); }
 .brand strong { font: 500 14px var(--sans); letter-spacing: .2em; }
 .brand span { font: 400 11px var(--mono); color: var(--muted); }
 .social { display: flex; gap: 32px; font: 400 12px var(--sans); letter-spacing: .16em; }
-.social a { color: var(--muted); transition: color .2s; }
+.social a { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); transition: color .2s; }
+.social svg { width: 14px; height: 14px; flex: none; fill: currentColor; }
 .social a:hover { color: var(--fg); }
 
 /* ---------- Top bar (slides in once the home nav scrolls away) ---------- */
