@@ -66,24 +66,66 @@ a:hover { color: var(--fg); }
 /* About */
 .about-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 48px; }
 .about-grid p { margin: 0 0 18px; font: 300 16px/1.65 var(--sans); color: #bbb; }
-.about-grid .label, .group > .label { display: block; margin-bottom: 16px; }
+.about-grid .label, .sec-body > .label { display: block; margin-bottom: 16px; }
 .plain { margin: 0; padding: 0; list-style: none; }
 .plain li { padding: 12px 0; border-top: 1px solid var(--line); font: 400 15px var(--sans); }
 
-/* Experience */
-.group + .group { margin-top: 96px; }
-.roles, .index { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
-.roles li { display: grid; grid-template-columns: 150px 1fr auto; align-items: baseline; gap: 16px; padding: 24px 0; border-top: 1px solid var(--line); }
-.roles .yr { font: 400 11px var(--mono); color: var(--dim); letter-spacing: .1em; }
-.roles .role { font: 400 22px/1.2 var(--sans); letter-spacing: -.01em; }
-.roles .role small { display: block; margin-top: 8px; font: 300 14px/1.5 var(--sans); color: var(--muted); letter-spacing: 0; }
-.roles .org { font: 400 11px var(--mono); color: var(--muted); letter-spacing: .1em; }
+/* Experience: each project is a hard drive that ejects a card when opened */
+.drives { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 56px 24px; margin: 0; padding: 0; list-style: none; }
+.drive { position: relative; --tilt: -1.5deg; }
+.drive:nth-child(even) { --tilt: 1.5deg; }
+.drive.open { z-index: 3; }
+.slot { position: relative; max-width: 220px; }
 
-.index a { display: grid; grid-template-columns: 44px 1fr auto; align-items: baseline; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); transition: padding-left .3s var(--ease); }
-.index a:hover { padding-left: 12px; }
-.index .n { font: 400 11px var(--mono); color: var(--dim); }
-.index .t { font: 400 26px/1.1 var(--sans); letter-spacing: -.02em; }
-.index .m { font: 400 11px var(--mono); color: var(--muted); letter-spacing: .1em; }
+.hdd { position: relative; z-index: 1; display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.hdd svg { display: block; width: 100%; height: auto; }
+.hdd:focus-visible { outline: 1px solid var(--fg); outline-offset: 6px; border-radius: 12px; }
+.hdd .case { fill: #050505; stroke: #3a3a3a; transition: stroke .3s; }
+.hdd .screws circle, .hdd .magnet, .hdd .sticker { fill: none; stroke: #2c2c2c; }
+.hdd .platter { fill: #0a0a0a; stroke: #555; }
+.hdd .tracks circle { fill: none; stroke: #1d1d1d; }
+.hdd .sheen { fill: none; stroke: rgba(255, 255, 255, .07); stroke-width: 40; }
+.hdd .spoke { fill: none; stroke: #2a2a2a; }
+.hdd .hub { fill: #000; stroke: #777; }
+.hdd .hub-screws circle { fill: #777; }
+.hdd .hub-core { fill: none; stroke: #777; }
+.hdd .arm polygon, .hdd .arm circle { fill: #0b0b0b; stroke: #bbb; stroke-linejoin: round; }
+.hdd .arm .head { fill: #fff; }
+.hdd .pins rect { fill: #1e1e1e; }
+.hdd .led { fill: #222; }
+
+/* Platter spins once the drive scrolls into view and spins up while open; the arm leaves its park position and seeks */
+.hdd .spin, .hdd .spin-fast { transform-origin: 100px 105px; animation: spin 7s linear infinite paused; }
+.hdd .spin-fast { animation-duration: .8s; }
+.drive.in .spin, .drive.open .spin-fast { animation-play-state: running; }
+.hdd .arm, .hdd .seek { transform-origin: 160px 220px; }
+.hdd .arm { transform: rotate(24deg); transition: transform .7s var(--ease); }
+.drive.open .case { stroke: #8a8a8a; }
+.drive.open .arm { transform: rotate(4deg); }
+.drive.open .seek { animation: seek 2.8s ease-in-out .6s infinite; }
+.drive.open .led { animation: blink .28s steps(1) infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes seek { 18% { transform: rotate(-7deg); } 34% { transform: rotate(5deg); } 52% { transform: rotate(-3deg); } 70% { transform: rotate(8deg); } 85% { transform: rotate(2deg); } }
+@keyframes blink { 50% { fill: #fff; } }
+
+/* Card sits tucked behind the drive and pops up out of its top edge */
+.card { position: absolute; bottom: calc(100% - 24px); left: 50%; width: 260px; margin-left: -130px; display: flex; flex-direction: column; gap: 10px; padding: 18px 18px 42px; background: #0b0b0b; border: 1px solid #2c2c2c; opacity: 0; transform: translateY(65%) scale(.92) rotate(0deg); transform-origin: 50% 100%; pointer-events: none; transition: transform .4s var(--ease), opacity .25s; }
+.drive:first-child .card { left: 0; margin-left: 0; }
+.drive:last-child .card { left: auto; right: 0; margin-left: 0; }
+.drive.open .card { opacity: 1; transform: translateY(0) scale(1) rotate(var(--tilt)); pointer-events: auto; transition: transform .6s cubic-bezier(.34, 1.56, .64, 1), opacity .2s; }
+.card-top { display: flex; justify-content: space-between; gap: 12px; font: 400 10px var(--mono); letter-spacing: .12em; color: var(--muted); }
+.card-top .n { color: var(--dim); }
+.card h3 { margin: 0; font: 400 22px/1.15 var(--sans); letter-spacing: -.02em; }
+.card p { margin: 0; font: 300 13px/1.55 var(--sans); color: #aaa; }
+.card .go { margin-top: 4px; font: 400 10px var(--mono); letter-spacing: .2em; color: var(--muted); transition: color .2s; }
+.card .go:hover { color: var(--fg); }
+
+.cap { display: flex; gap: 10px; margin: 16px 0 0; font: 400 11px var(--mono); letter-spacing: .12em; color: var(--muted); text-transform: uppercase; transition: color .3s; }
+.cap .n { color: var(--dim); }
+.drive.open .cap { color: var(--fg); }
+.hint { margin: 48px 0 0; font: 400 11px/1 var(--mono); letter-spacing: .3em; color: var(--muted); }
+.touch { display: none; }
+@media (hover: none) { .desk { display: none; } .touch { display: inline; } }
 
 /* Contact */
 #contact { min-height: 75vh; min-height: 75svh; }
@@ -97,7 +139,7 @@ a:hover { color: var(--fg); }
 
 /* Scroll reveal (content only starts hidden once main.js is running) */
 .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: calc(var(--i, 0) * 70ms); }
-.js .index li.reveal:not(.in) { transform: translateX(40px); }
+.js .drive.reveal:not(.in) { transform: translateY(70px); }
 .js .reveal.in { opacity: 1; transform: none; }
 
 /* Tablet */
@@ -109,7 +151,9 @@ a:hover { color: var(--fg); }
   .section { gap: 32px; padding: 128px var(--pad) 112px; }
   .about-grid { grid-template-columns: 1fr 1fr; }
   .about-grid .bio { grid-column: 1 / -1; }
-  .index .t { font-size: 20px; }
+  .drives { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 64px; }
+  .drive:nth-child(odd) .card { left: 0; right: auto; margin-left: 0; }
+  .drive:nth-child(even) .card { left: auto; right: 0; margin-left: 0; }
 }
 
 /* Mobile */
@@ -132,10 +176,9 @@ a:hover { color: var(--fg); }
   .sec-label { position: static; }
   .headline { margin-bottom: 40px; }
   .about-grid { grid-template-columns: 1fr; gap: 36px; }
-  .roles li { grid-template-columns: 1fr; gap: 8px; padding: 20px 0; }
-  .roles .role { font-size: 20px; }
-  .index a { grid-template-columns: 32px 1fr; padding: 14px 0; }
-  .index .m { grid-column: 2; }
+  .drives { gap: 48px 16px; }
+  .card { width: min(260px, calc(100vw - 2 * var(--pad))); }
+  .card h3 { font-size: 20px; }
   .end { flex-direction: column; gap: 12px; }
 }
 
@@ -144,5 +187,5 @@ a:hover { color: var(--fg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: .01ms !important; transition-delay: 0s !important; }
+  *, *::before, *::after { transition-duration: .01ms !important; transition-delay: 0s !important; animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }
 }

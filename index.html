@@ -87,24 +87,58 @@
   <section class="section" id="experience" data-section>
     <div class="sec-label reveal"><span class="eyebrow">03 — EXPERIENCE</span></div>
     <div class="sec-body">
-      <div class="group">
-        <span class="label reveal">ROLES</span>
-        <ol class="roles">
-          <li class="reveal" style="--i:1"><span class="yr">2025 — NOW</span><span class="role">Your current role<small>A line on what you're responsible for and what you've shipped.</small></span><span class="org">ORGANIZATION</span></li>
-          <li class="reveal" style="--i:2"><span class="yr">2024 — 2025</span><span class="role">Previous role<small>A line on the work and what you learned from it.</small></span><span class="org">ORGANIZATION</span></li>
-          <li class="reveal" style="--i:3"><span class="yr">2023</span><span class="role">Program, club or competition<small>Leadership, awards, or anything else worth showing.</small></span><span class="org">ORGANIZATION</span></li>
-        </ol>
-      </div>
-
-      <div class="group">
-        <span class="label reveal">SELECTED PROJECTS</span>
-        <ol class="index">
-          <li class="reveal" style="--i:1"><a href="#"><span class="n">01</span><span class="t">Ledger OS</span><span class="m">PRODUCT UI · 2026</span></a></li>
-          <li class="reveal" style="--i:2"><a href="#"><span class="n">02</span><span class="t">Halftone Type</span><span class="m">WEBGL · 2025</span></a></li>
-          <li class="reveal" style="--i:3"><a href="#"><span class="n">03</span><span class="t">Northwind DS</span><span class="m">DESIGN SYSTEM · 2025</span></a></li>
-          <li class="reveal" style="--i:4"><a href="#"><span class="n">04</span><span class="t">Field Notes</span><span class="m">EDITORIAL · 2024</span></a></li>
-        </ol>
-      </div>
+      <span class="label reveal">SELECTED PROJECTS</span>
+      <ol class="drives">
+        <li class="drive reveal" style="--i:1">
+          <div class="slot">
+            <div class="card" id="proj-1">
+              <div class="card-top"><span class="n">01</span><span>PRODUCT UI · 2026</span></div>
+              <h3>Ledger OS</h3>
+              <p>Placeholder synopsis: a couple of sentences on what this project is, the problem it solves and the part you built.</p>
+              <a class="go" href="#">VIEW PROJECT →</a>
+            </div>
+            <button class="hdd" type="button" aria-controls="proj-1" aria-expanded="false" aria-label="Ledger OS"></button>
+          </div>
+          <p class="cap"><span class="n">01</span>Ledger OS</p>
+        </li>
+        <li class="drive reveal" style="--i:2">
+          <div class="slot">
+            <div class="card" id="proj-2">
+              <div class="card-top"><span class="n">02</span><span>WEBGL · 2025</span></div>
+              <h3>Halftone Type</h3>
+              <p>Placeholder synopsis: a couple of sentences on what this project is, the problem it solves and the part you built.</p>
+              <a class="go" href="#">VIEW PROJECT →</a>
+            </div>
+            <button class="hdd" type="button" aria-controls="proj-2" aria-expanded="false" aria-label="Halftone Type"></button>
+          </div>
+          <p class="cap"><span class="n">02</span>Halftone Type</p>
+        </li>
+        <li class="drive reveal" style="--i:3">
+          <div class="slot">
+            <div class="card" id="proj-3">
+              <div class="card-top"><span class="n">03</span><span>DESIGN SYSTEM · 2025</span></div>
+              <h3>Northwind DS</h3>
+              <p>Placeholder synopsis: a couple of sentences on what this project is, the problem it solves and the part you built.</p>
+              <a class="go" href="#">VIEW PROJECT →</a>
+            </div>
+            <button class="hdd" type="button" aria-controls="proj-3" aria-expanded="false" aria-label="Northwind DS"></button>
+          </div>
+          <p class="cap"><span class="n">03</span>Northwind DS</p>
+        </li>
+        <li class="drive reveal" style="--i:4">
+          <div class="slot">
+            <div class="card" id="proj-4">
+              <div class="card-top"><span class="n">04</span><span>EDITORIAL · 2024</span></div>
+              <h3>Field Notes</h3>
+              <p>Placeholder synopsis: a couple of sentences on what this project is, the problem it solves and the part you built.</p>
+              <a class="go" href="#">VIEW PROJECT →</a>
+            </div>
+            <button class="hdd" type="button" aria-controls="proj-4" aria-expanded="false" aria-label="Field Notes"></button>
+          </div>
+          <p class="cap"><span class="n">04</span>Field Notes</p>
+        </li>
+      </ol>
+      <p class="hint reveal" style="--i:5">[ <span class="desk">HOVER</span><span class="touch">TAP</span> A DRIVE TO OPEN IT ]</p>
     </div>
   </section>
 
@@ -126,6 +160,34 @@
   <span>©2026 PRANAV NARESH</span>
   <a href="#home">BACK TO TOP ↑</a>
 </footer>
+
+<!-- Hard drive artwork, cloned into each project's .hdd button by main.js -->
+<template id="hdd-art">
+  <svg viewBox="0 0 200 280" aria-hidden="true">
+    <rect class="case" x="4" y="4" width="192" height="272" rx="10"/>
+    <g class="screws"><circle cx="16" cy="16" r="3"/><circle cx="184" cy="16" r="3"/><circle cx="16" cy="264" r="3"/><circle cx="184" cy="264" r="3"/></g>
+    <circle class="platter" cx="100" cy="105" r="78"/>
+    <g class="tracks"><circle cx="100" cy="105" r="68"/><circle cx="100" cy="105" r="56"/><circle cx="100" cy="105" r="44"/><circle cx="100" cy="105" r="32"/></g>
+    <g class="spin"><g class="spin-fast">
+      <circle class="sheen" cx="100" cy="105" r="50" stroke-dasharray="44 270"/>
+      <path class="spoke" d="M100 87V29M115.6 114L165.8 143M84.4 114L34.2 143"/>
+      <circle class="hub" cx="100" cy="105" r="16"/>
+      <g class="hub-screws"><circle cx="110" cy="105" r="1.6"/><circle cx="105" cy="113.7" r="1.6"/><circle cx="95" cy="113.7" r="1.6"/><circle cx="90" cy="105" r="1.6"/><circle cx="95" cy="96.3" r="1.6"/><circle cx="105" cy="96.3" r="1.6"/></g>
+      <circle class="hub-core" cx="100" cy="105" r="5"/>
+    </g></g>
+    <rect class="magnet" x="138" y="232" width="48" height="30" rx="6"/>
+    <g class="arm"><g class="seek">
+      <polygon points="169.5,217 182.3,244.3 155.7,252.9 150.5,223"/>
+      <polygon points="166.7,217.9 114.4,69.2 109.6,70.8 153.3,222.1"/>
+      <circle class="head" cx="112" cy="70" r="3.5"/>
+      <circle cx="160" cy="220" r="12"/>
+      <circle cx="160" cy="220" r="4"/>
+    </g></g>
+    <circle class="led" cx="22" cy="232" r="3"/>
+    <rect class="sticker" x="32" y="225" width="70" height="14" rx="2"/>
+    <g class="pins"><rect x="30" y="250" width="4" height="12"/><rect x="37" y="250" width="4" height="12"/><rect x="44" y="250" width="4" height="12"/><rect x="51" y="250" width="4" height="12"/><rect x="58" y="250" width="4" height="12"/><rect x="65" y="250" width="4" height="12"/><rect x="72" y="250" width="4" height="12"/><rect x="79" y="250" width="4" height="12"/><rect x="86" y="250" width="4" height="12"/><rect x="93" y="250" width="4" height="12"/><rect x="100" y="250" width="4" height="12"/></g>
+  </svg>
+</template>
 
 <script src="main.js"></script>
 </body>

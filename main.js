@@ -89,6 +89,40 @@ document.documentElement.classList.add('js');
   document.querySelectorAll('[data-section]').forEach((s) => spy.observe(s));
 })();
 
+// Project drives: open a drive's card on hover (or keyboard focus); on touch screens a tap toggles it.
+(() => {
+  const drives = [...document.querySelectorAll('.drive')];
+  const art = document.getElementById('hdd-art').content;
+  const canHover = matchMedia('(hover: hover)').matches;
+
+  const setOpen = (d, v) => {
+    d.classList.toggle('open', v);
+    d.querySelector('.hdd').setAttribute('aria-expanded', v);
+  };
+
+  drives.forEach((d) => {
+    const btn = d.querySelector('.hdd');
+    btn.append(art.cloneNode(true));
+
+    if (canHover) {
+      d.addEventListener('mouseenter', () => setOpen(d, true));
+      d.addEventListener('mouseleave', () => setOpen(d, false));
+    } else {
+      btn.addEventListener('click', () => {
+        const v = !d.classList.contains('open');
+        drives.forEach((o) => setOpen(o, false));
+        setOpen(d, v);
+      });
+    }
+    d.addEventListener('focusin', (e) => { if (e.target.matches(':focus-visible')) setOpen(d, true); });
+    d.addEventListener('focusout', (e) => { if (!d.contains(e.relatedTarget)) setOpen(d, false); });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.drive')) drives.forEach((d) => setOpen(d, false));
+  });
+})();
+
 // Fade section content in as it scrolls into view.
 (() => {
   const io = new IntersectionObserver((entries) => {
