@@ -17,7 +17,7 @@ document.documentElement.classList.add('js');
   }
 
   const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
-  let visible = true, jelly = 0, start = null;
+  let visible = true, jelly = 0, start = null, settled = false;
 
   stage.addEventListener('mousemove', (e) => {
     const r = stage.getBoundingClientRect();
@@ -25,7 +25,7 @@ document.documentElement.classList.add('js');
     mouse.y = (e.clientY - r.top) / r.height - 0.5;
   });
   stage.addEventListener('mouseleave', () => { mouse.x = 0; mouse.y = 0; });
-  stage.addEventListener('pointerdown', () => { jelly = 0.09; });
+  stage.addEventListener('pointerdown', () => { if (!settled) jelly = 0.09; });
 
   // Skip drawing while the home section is scrolled out of view.
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(stage);
@@ -50,9 +50,6 @@ document.documentElement.classList.add('js');
     smooth.x += dx * 0.06;
     smooth.y += dy * 0.06;
 
-    // Jelly: moving the cursor (or clicking) sets the surface rippling, then it settles.
-    if (!reduceMotion) jelly = Math.min(0.09, jelly * 0.95 + Math.hypot(dx, dy) * 0.02);
-
     const ay = t * 0.22 + smooth.x * 1.2;
     const ax = 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1;
     const ca = Math.cos(ay), sa = Math.sin(ay), cb = Math.cos(ax), sb = Math.sin(ax);
@@ -74,6 +71,11 @@ document.documentElement.classList.add('js');
       const e = bt - HOP * 3;
       land = HEIGHTS[2] * Math.exp(-e * 7) * Math.cos(e * 16);
     }
+    // Jelly: while bouncing, moving the cursor (or clicking) sets the surface rippling.
+    // Once the bounce has settled the sphere stays firm.
+    settled = reduceMotion || bt > HOP * 3 + 0.6;
+    jelly = settled ? jelly * 0.85 : Math.min(0.09, jelly * 0.95 + Math.hypot(dx, dy) * 0.02);
+
     const sy = 1 - 0.13 * land + 0.03 * hop, sx = 1 + 0.09 * land - 0.015 * hop;
     const cy = H / 2 - hop * S * 0.12 + S * (1 - sy);
 
