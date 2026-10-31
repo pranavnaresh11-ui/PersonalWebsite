@@ -114,20 +114,31 @@ document.documentElement.classList.add('js');
   document.querySelectorAll('[data-section]').forEach((s) => spy.observe(s));
 })();
 
-// Footer: hide it while the page is scrolling and bring it back once scrolling settles.
-// It stays hidden at the very bottom, where the page's own end footer takes over.
+// Footer: hide it as soon as the page scrolls, and bring it back only once scrolling settles
+// in a different section from the one it was last shown in. It stays hidden at the very
+// bottom, where the page's own end footer takes over.
 (() => {
   const footer = document.querySelector('.stage .footer');
-  let atEnd = false, timer;
+  let atEnd = false, current = 'home', shownIn = 'home', timer;
+
   new IntersectionObserver(([e]) => {
     atEnd = e.isIntersecting;
-    footer.classList.toggle('away', atEnd);
+    if (atEnd) footer.classList.add('away');
   }).observe(document.querySelector('.end'));
+
+  const spy = new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) current = e.target.id;
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('[data-section]').forEach((s) => spy.observe(s));
 
   addEventListener('scroll', () => {
     footer.classList.add('away');
     clearTimeout(timer);
-    timer = setTimeout(() => footer.classList.toggle('away', atEnd), 350);
+    timer = setTimeout(() => {
+      if (atEnd || current === shownIn) return;
+      shownIn = current;
+      footer.classList.remove('away');
+    }, 350);
   }, { passive: true });
 })();
 
