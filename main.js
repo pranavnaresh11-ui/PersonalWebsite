@@ -17,7 +17,7 @@ document.documentElement.classList.add('js');
   }
 
   const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
-  let visible = true, jelly = 0;
+  let visible = true, jelly = 0, start = null;
 
   stage.addEventListener('mousemove', (e) => {
     const r = stage.getBoundingClientRect();
@@ -58,12 +58,24 @@ document.documentElement.classList.add('js');
     const ca = Math.cos(ay), sa = Math.sin(ay), cb = Math.cos(ax), sb = Math.sin(ax);
     const S = Math.min(W, H) * 0.36, cx = W / 2;
 
-    // Bounce: small hops that squash wide and flat on landing and stretch a touch in the air.
+    // Bounce three times when the page opens, each hop lower than the last, squashing wide and
+    // flat on landing and stretching a touch in the air; then wobble to rest and just rotate.
     // The bottom stays planted while it squashes.
-    const hop = reduceMotion ? 1 : Math.abs(Math.sin(t * 2.2));
-    const land = reduceMotion ? 0 : Math.pow(1 - hop, 6);
+    if (start === null) start = t;
+    const bt = t - start, HOP = Math.PI / 2.2, HEIGHTS = [1, 0.6, 0.32];
+    let hop = 0, land = 0;
+    if (reduceMotion) {
+      // no bounce
+    } else if (bt < HOP * 3) {
+      const amp = HEIGHTS[Math.floor(bt / HOP)], s = Math.abs(Math.sin(bt * 2.2));
+      hop = s * amp;
+      land = Math.pow(1 - s, 6) * amp;
+    } else {
+      const e = bt - HOP * 3;
+      land = HEIGHTS[2] * Math.exp(-e * 7) * Math.cos(e * 16);
+    }
     const sy = 1 - 0.13 * land + 0.03 * hop, sx = 1 + 0.09 * land - 0.015 * hop;
-    const cy = H / 2 + S * 0.06 - (reduceMotion ? 0 : hop * S * 0.12) + S * (1 - sy);
+    const cy = H / 2 - hop * S * 0.12 + S * (1 - sy);
 
     const P = verts.map(([x, y, z]) => {
       const k = 1 + jelly * Math.sin(y * 5 + t * 11) * Math.cos(x * 3 - t * 7);
@@ -190,7 +202,7 @@ document.documentElement.classList.add('js');
     footer.classList.add('away');
     clearTimeout(timer);
     timer = setTimeout(() => {
-      if (atEnd || current === shownIn) return;
+      if (atEnd || (current === shownIn && scrollY > 10)) return;
       shownIn = current;
       footer.classList.remove('away');
     }, 350);
