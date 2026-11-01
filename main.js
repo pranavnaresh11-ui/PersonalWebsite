@@ -22,7 +22,7 @@ document.documentElement.classList.add('js');
   LAYERS.forEach((n, l) => {
     first.push(nodes.length);
     for (let k = 0; k < n; k++) {
-      nodes.push([-1.25 + (l * 2.5) / (LAYERS.length - 1), (k - (n - 1) / 2) * 0.34, 0.18 * Math.sin(l * 1.7 + k * 2.3)]);
+      nodes.push([-0.95 + (l * 1.9) / (LAYERS.length - 1), (k - (n - 1) / 2) * 0.34, 0.18 * Math.sin(l * 1.7 + k * 2.3)]);
     }
   });
   LAYERS.forEach((n, l) => {
@@ -90,7 +90,9 @@ document.documentElement.classList.add('js');
     const ay = lerp(Math.sin(at * 0.5) * 0.35 + smooth.x * 0.8, t * 0.22 + smooth.x * 1.2, e) + e * (1 - e) * 2.5;
     const ax = lerp(0.08 + smooth.y * 0.5, 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1, e);
     const ca = Math.cos(ay), sa = Math.sin(ay), cb = Math.cos(ax), sb = Math.sin(ax);
-    const S = Math.min(W, H) * 0.36, cx = W / 2;
+    // The net sits as far right as fits in the canvas, clear of the intro text, and slides back
+    // to centre as it folds.
+    const S = Math.min(W, H) * 0.36, cx = W / 2 + Math.max(0, W / 2 - S * 1.07 - 6) * (1 - e);
 
     // Bounce three times once folded, each hop lower than the last, squashing wide and flat on
     // landing and stretching a touch in the air; then wobble to rest and just rotate.
