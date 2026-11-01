@@ -394,52 +394,6 @@ document.documentElement.classList.add('js');
   });
 })();
 
-// Scroll guides: headlines light up word by word as they rise, and each section label's rail
-// fills as you read through the section.
-(() => {
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const clamp = (v) => Math.min(1, Math.max(0, v));
-
-  const heads = [...document.querySelectorAll('.section .headline')].map((h) => {
-    const text = h.textContent.trim();
-    h.setAttribute('aria-label', text);
-    h.replaceChildren(...text.split(/\s+/).flatMap((w, i) => {
-      const s = Object.assign(document.createElement('span'), { className: 'w', textContent: w });
-      s.setAttribute('aria-hidden', 'true');
-      return i ? [' ', s] : [s];
-    }));
-    return [h, [...h.querySelectorAll('.w')]];
-  });
-
-  const rails = [...document.querySelectorAll('.section')].map((s) => {
-    const rail = Object.assign(document.createElement('span'), { className: 'rail', innerHTML: '<i></i>' });
-    s.querySelector('.sec-label').append(rail);
-    return [s, rail];
-  });
-
-  const update = () => {
-    const vh = innerHeight;
-    for (const [h, words] of heads) {
-      const p = reduceMotion ? 1 : clamp((vh * 0.9 - h.getBoundingClientRect().top) / (vh * 0.45));
-      const lit = Math.round(p * words.length);
-      words.forEach((w, i) => w.classList.toggle('lit', i < lit));
-    }
-    for (const [s, rail] of rails) {
-      const r = s.getBoundingClientRect();
-      rail.style.setProperty('--p', clamp((vh * 0.5 - r.top) / r.height).toFixed(3));
-    }
-  };
-
-  let queued = false;
-  addEventListener('scroll', () => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(() => { queued = false; update(); });
-  }, { passive: true });
-  addEventListener('resize', update);
-  update();
-})();
-
 // Fade section content in as it scrolls into view.
 (() => {
   const io = new IntersectionObserver((entries) => {

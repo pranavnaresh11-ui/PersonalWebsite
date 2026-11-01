@@ -104,15 +104,6 @@ main, .end { position: relative; z-index: 1; }
 /* Section labels read like code tags */
 .eyebrow .tag { font-weight: 400; color: #19e6ff; }
 
-/* Each section label has a rail that fills as you scroll through the section */
-.rail { display: block; position: relative; width: 1px; height: 140px; margin-top: 24px; background: var(--line); }
-.rail i { position: absolute; inset: 0; background: linear-gradient(#19e6ff, #39ff78); transform-origin: top; transform: scaleY(var(--p, 0)); }
-
-/* Headlines brighten word by word as they scroll up the screen */
-.js .headline .w { opacity: .16; transition: opacity .35s; }
-.js .headline .w.lit { opacity: 1; }
-
-
 /* Experience: each project is a hard drive that ejects a card when opened */
 .drives { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 56px 24px; margin: 0; padding: 0; list-style: none; }
 .drive { position: relative; --tilt: -1.5deg; }
@@ -218,7 +209,6 @@ main, .end { position: relative; z-index: 1; }
   .section { grid-template-columns: 1fr; gap: 24px; padding: 96px var(--pad) 80px; }
   .sec-label { position: static; }
   .headline { margin-bottom: 40px; }
-  .rail { display: none; }
   .about-grid { grid-template-columns: 1fr; gap: 36px; }
   .drives { gap: 48px 16px; }
   .card { width: min(260px, calc(100vw - 2 * var(--pad))); }
