@@ -412,6 +412,258 @@ document.documentElement.classList.add('js');
   });
 })();
 
+// Scroll guides: headlines light up word by word as they rise, each section label's rail fills
+// as you read through the section, and the About steps follow the part you're on.
+(() => {
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+
+  const heads = [...document.querySelectorAll('.section .headline')].map((h) => {
+    const text = h.textContent.trim();
+    h.setAttribute('aria-label', text);
+    h.replaceChildren(...text.split(/\s+/).flatMap((w, i) => {
+      const s = Object.assign(document.createElement('span'), { className: 'w', textContent: w });
+      s.setAttribute('aria-hidden', 'true');
+      return i ? [' ', s] : [s];
+    }));
+    return [h, [...h.querySelectorAll('.w')]];
+  });
+
+  const rails = [...document.querySelectorAll('.section')].map((s) => {
+    const rail = Object.assign(document.createElement('span'), { className: 'rail', innerHTML: '<i></i>' });
+    s.querySelector('.sec-label').append(rail);
+    return [s, rail];
+  });
+
+  const about = document.getElementById('about');
+  const steps = [...document.querySelectorAll('.steps a')].map((a) => [a, document.querySelector(a.getAttribute('href'))]);
+
+  const update = () => {
+    const vh = innerHeight;
+    for (const [h, words] of heads) {
+      const p = reduceMotion ? 1 : clamp((vh * 0.9 - h.getBoundingClientRect().top) / (vh * 0.45));
+      const lit = Math.round(p * words.length);
+      words.forEach((w, i) => w.classList.toggle('lit', i < lit));
+    }
+    for (const [s, rail] of rails) {
+      const r = s.getBoundingClientRect();
+      rail.style.setProperty('--p', clamp((vh * 0.5 - r.top) / r.height).toFixed(3));
+    }
+    const ar = about.getBoundingClientRect(), inAbout = ar.top < vh * 0.6 && ar.bottom > vh * 0.4;
+    let cur = 0;
+    steps.forEach(([, target], i) => { if (target.getBoundingClientRect().top < vh * 0.55) cur = i; });
+    steps.forEach(([a], i) => a.classList.toggle('on', inAbout && i === cur));
+  };
+
+  let queued = false;
+  addEventListener('scroll', () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; update(); });
+  }, { passive: true });
+  addEventListener('resize', update);
+  update();
+})();
+
+// About mind map: a small force-directed graph built from the list in the HTML. It grows out of
+// the centre as you scroll down to it; drag nodes around, hover (or tap) one to read its note.
+(() => {
+  const stage = document.querySelector('.mind-stage');
+  if (!stage) return;
+  const canvas = stage.querySelector('.mind-canvas'), ctx = canvas.getContext('2d');
+  const info = stage.querySelector('.mind-info');
+  const [kicker, title, note] = ['.mind-kicker', '.mind-title', '.mind-note'].map((s) => info.querySelector(s));
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SANS = 'Geist, sans-serif', MONO = '"Geist Mono", monospace', RADIUS = [30, 6, 4];
+
+  // Centre node, then a hub per group followed by that group's items.
+  const nodes = [{ label: 'PRANAV', kind: 0, angle: 0, kicker: kicker.textContent, title: title.textContent, note: note.textContent }];
+  const links = [];
+  const groups = [...document.querySelectorAll('.mind-data > li')];
+  groups.forEach((g, gi) => {
+    const name = g.querySelector('strong').textContent.trim();
+    const items = [...g.querySelectorAll('li')].map((li) => [li.textContent.trim(), li.dataset.note || '']);
+    const angle = -Math.PI / 2 + (gi * Math.PI * 2) / groups.length;
+    const hub = nodes.push({ label: name.toUpperCase(), kind: 1, parent: 0, angle, kicker: 'BRANCH', title: name, note: items.map(([l]) => l).join(' · ') }) - 1;
+    links.push([0, hub]);
+    items.forEach(([label, text], k) => {
+      const spread = items.length > 1 ? (k / (items.length - 1) - 0.5) * 1.3 : 0;
+      links.push([hub, nodes.push({ label, kind: 2, parent: hub, angle: angle + spread, kicker: name.toUpperCase(), title: label, note: text }) - 1]);
+    });
+  });
+  nodes.forEach((n) => Object.assign(n, { x: 0, y: 0, vx: 0, vy: 0, grow: 0, born: false, box: null }));
+
+  let W = 0, H = 0, visible = false, t = 0;
+  const resize = () => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.clientWidth; H = canvas.clientHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  new ResizeObserver(resize).observe(canvas);
+  new IntersectionObserver((es) => { visible = es[es.length - 1].isIntersecting; }, { rootMargin: '200px 0px' }).observe(stage);
+
+  // Pointer: drag any node; the one under the cursor (or last tapped) fills the info panel.
+  let drag = null, hover = null, picked = null, shown = nodes[0];
+  const hit = (x, y) => {
+    let best = null, bd = Infinity;
+    for (const n of nodes) {
+      if (n.grow < 0.5) continue;
+      const d = Math.hypot(n.x - x, n.y - y), b = n.box;
+      const onLabel = b && x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3];
+      if ((d < RADIUS[n.kind] + 12 || onLabel) && d < bd) { best = n; bd = d; }
+    }
+    return best;
+  };
+  canvas.addEventListener('pointerdown', (e) => {
+    const n = hit(e.offsetX, e.offsetY);
+    if (!n) return;
+    drag = picked = n;
+    canvas.setPointerCapture(e.pointerId);
+    canvas.classList.add('dragging');
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (drag) { drag.x = e.offsetX; drag.y = e.offsetY; drag.vx = drag.vy = 0; return; }
+    hover = hit(e.offsetX, e.offsetY);
+    canvas.style.cursor = hover ? 'grab' : 'default';
+  });
+  const end = () => { drag = null; canvas.classList.remove('dragging'); };
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  canvas.addEventListener('pointerleave', () => { hover = null; });
+
+  const show = (n) => {
+    if (n === shown) return;
+    shown = n;
+    kicker.textContent = n.kicker; title.textContent = n.title; note.textContent = n.note;
+    info.classList.remove('swap');
+    void info.offsetWidth;
+    info.classList.add('swap');
+  };
+
+  const pick = () => (Math.random() * links.length) | 0;
+  const pulses = reduceMotion ? [] : Array.from({ length: 7 }, () => ({ link: pick(), p: -Math.random(), cyan: Math.random() < 0.55 }));
+
+  const frame = () => {
+    requestAnimationFrame(frame);
+    if (!visible || !W) return;
+    t += 1 / 60;
+
+    // Grow the map node by node as the stage scrolls up into view.
+    const r = stage.getBoundingClientRect(), vh = innerHeight;
+    const p = reduceMotion ? 1 : Math.min(1, Math.max(0, (vh * 0.95 - r.top) / (r.height * 0.7)));
+    const count = Math.ceil(p * nodes.length);
+    const cx = W / 2, cy = H * 0.44, unit = Math.min(W, H);
+    nodes.forEach((n, i) => {
+      if (i < count && !n.born) {
+        const par = nodes[n.parent ?? 0];
+        n.born = true;
+        n.x = i ? par.x + Math.cos(n.angle) * 8 : cx;
+        n.y = i ? par.y + Math.sin(n.angle) * 8 : cy;
+        n.vx = Math.cos(n.angle) * 5; n.vy = Math.sin(n.angle) * 5;
+      }
+      n.grow += ((i < count ? 1 : 0) - n.grow) * 0.12;
+    });
+    const live = nodes.filter((n) => n.born && n.grow > 0.02);
+
+    // Forces: nodes push each other apart, links pull to a set length, everything drifts gently
+    // and is held loosely around the centre.
+    for (let a = 0; a < live.length; a++) for (let b = a + 1; b < live.length; b++) {
+      const A = live[a], B = live[b];
+      let dx = B.x - A.x, dy = B.y - A.y;
+      const d2 = dx * dx + dy * dy + 0.01, d = Math.sqrt(d2), f = Math.min(3, (unit * unit * 0.016) / d2);
+      dx /= d; dy /= d;
+      A.vx -= dx * f; A.vy -= dy * f; B.vx += dx * f; B.vy += dy * f;
+    }
+    for (const [a, b] of links) {
+      const A = nodes[a], B = nodes[b];
+      if (!A.born || !B.born) continue;
+      let dx = B.x - A.x, dy = B.y - A.y;
+      const d = Math.hypot(dx, dy) || 1, f = (d - (B.kind === 1 ? 0.26 : 0.16) * unit) * 0.02;
+      dx /= d; dy /= d;
+      A.vx += dx * f; A.vy += dy * f; B.vx -= dx * f; B.vy -= dy * f;
+    }
+    // Keep nodes out from under the info panel in the bottom-left corner.
+    // (On phones the panel sits below the map instead, so there's nothing to avoid.)
+    const ib = info.getBoundingClientRect(), cr = canvas.getBoundingClientRect();
+    const keepX = ib.right - cr.left + 24, keepY = ib.top < cr.bottom ? ib.top - cr.top - 24 : Infinity;
+    for (const n of live) {
+      if (n === drag) continue;
+      if (n.x < keepX && n.y > keepY) n.vy -= Math.min(2.5, (n.y - keepY) * 0.08);
+      const k = n.kind === 0 ? 0.03 : 0.0015;
+      n.vx += (cx - n.x) * k; n.vy += (cy - n.y) * k;
+      if (!reduceMotion) { n.vx += Math.sin(t * 0.7 + n.angle * 3) * 0.02; n.vy += Math.cos(t * 0.6 + n.angle * 2) * 0.02; }
+      n.vx *= 0.82; n.vy *= 0.82;
+      n.x = Math.min(W - 24, Math.max(24, n.x + n.vx));
+      n.y = Math.min(H - 24, Math.max(24, n.y + n.vy));
+    }
+
+    const active = drag || hover || picked || nodes[0];
+    show(active);
+
+    ctx.clearRect(0, 0, W, H);
+    for (const [a, b] of links) {
+      const A = nodes[a], B = nodes[b];
+      if (!B.born) continue;
+      const g = Math.min(A.grow, B.grow), hot = A === active || B === active;
+      ctx.strokeStyle = hot ? `rgba(25,230,255,${(0.85 * g).toFixed(3)})` : `rgba(255,255,255,${(0.16 * g).toFixed(3)})`;
+      ctx.lineWidth = hot ? 1.4 : 1;
+      ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+    }
+    for (const q of pulses) {
+      q.p += 0.012;
+      if (q.p >= 1) Object.assign(q, { link: pick(), p: -Math.random() * 0.8, cyan: Math.random() < 0.55 });
+      const [a, b] = links[q.link], A = nodes[a], B = nodes[b];
+      if (q.p < 0 || !B.born || B.grow < 0.5) continue;
+      const x = A.x + (B.x - A.x) * q.p, y = A.y + (B.y - A.y) * q.p, c = q.cyan ? '25,230,255' : '57,255,120';
+      ctx.fillStyle = `rgba(${c},.2)`; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = `rgb(${c})`; ctx.beginPath(); ctx.arc(x, y, 1.7, 0, Math.PI * 2); ctx.fill();
+    }
+    // Items first, so group labels can see where item labels landed.
+    for (const n of [...live].sort((a, b) => b.kind - a.kind)) {
+      const rad = RADIUS[n.kind] * n.grow, hot = n === active;
+      ctx.globalAlpha = Math.min(1, n.grow);
+      if (hot) { ctx.fillStyle = 'rgba(25,230,255,.15)'; ctx.beginPath(); ctx.arc(n.x, n.y, rad + 8, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillStyle = n.kind === 0 ? '#000' : hot ? '#19e6ff' : n.kind === 1 ? '#fff' : '#000';
+      ctx.strokeStyle = n.kind === 0 || hot ? '#19e6ff' : '#fff';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(n.x, n.y, rad, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.textBaseline = 'middle';
+      if (n.kind === 0) {
+        ctx.font = `500 10px ${MONO}`; ctx.letterSpacing = '2px'; ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
+        ctx.fillText(n.label, n.x + 1, n.y);
+        n.box = null;
+      } else if (n.kind === 1) {
+        // Group names sit under their node, or above it if an item label is in the way.
+        ctx.font = `500 10px ${MONO}`; ctx.letterSpacing = '2px'; ctx.textAlign = 'center';
+        ctx.fillStyle = hot ? '#fff' : '#bbb';
+        const w = ctx.measureText(n.label).width;
+        const clash = (y) => live.some((o) => o.kind === 2 && o.box && o.box[0] < n.x + w / 2 && o.box[2] > n.x - w / 2 && o.box[1] < y + 8 && o.box[3] > y - 8);
+        let ly = n.y + rad + 14;
+        if (clash(ly)) ly = n.y - rad - 14;
+        ctx.fillText(n.label, n.x, ly);
+        n.box = [n.x - w / 2, ly - 8, n.x + w / 2, ly + 8];
+      } else {
+        // Item labels point away from the centre, flipping sides if they'd run off the edge.
+        ctx.font = `300 14px ${SANS}`; ctx.letterSpacing = '0px';
+        const w = ctx.measureText(n.label).width;
+        let dir = n.x >= cx ? 1 : -1;
+        if (dir > 0 && n.x + rad + 9 + w > W - 6) dir = -1;
+        else if (dir < 0 && n.x - rad - 9 - w < 6) dir = 1;
+        const lx = n.x + dir * (rad + 9);
+        ctx.textAlign = dir > 0 ? 'left' : 'right';
+        ctx.fillStyle = hot ? '#fff' : '#8a8a8a';
+        ctx.fillText(n.label, lx, n.y);
+        n.box = dir > 0 ? [lx, n.y - 10, lx + w, n.y + 10] : [lx - w, n.y - 10, lx, n.y + 10];
+      }
+      ctx.globalAlpha = 1;
+    }
+  };
+  requestAnimationFrame(frame);
+})();
+
 // Fade section content in as it scrolls into view.
 (() => {
   const io = new IntersectionObserver((entries) => {

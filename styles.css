@@ -100,11 +100,45 @@ main, .end { position: relative; z-index: 1; }
 .headline { margin: 0 0 64px; max-width: 20ch; font: 300 clamp(30px, 4vw, 52px)/1.1 var(--sans); letter-spacing: -.025em; text-wrap: balance; }
 
 /* About */
-.about-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 48px; }
-.about-grid p { margin: 0 0 18px; font: 300 16px/1.65 var(--sans); color: #bbb; }
-.about-grid .label, .sec-body > .label { display: block; margin-bottom: 16px; }
-.plain { margin: 0; padding: 0; list-style: none; }
-.plain li { padding: 12px 0; border-top: 1px solid var(--line); font: 400 15px var(--sans); }
+.sec-body > .label { display: block; margin-bottom: 16px; }
+/* Section labels read like code tags */
+.eyebrow .tag { font-weight: 400; color: #19e6ff; }
+
+/* Each section label has a rail that fills as you scroll through the section */
+.rail { display: block; position: relative; width: 1px; height: 140px; margin-top: 24px; background: var(--line); }
+.rail i { position: absolute; inset: 0; background: linear-gradient(#19e6ff, #39ff78); transform-origin: top; transform: scaleY(var(--p, 0)); }
+
+/* About: steps in the label light up as you reach each part */
+.steps { margin: 28px 0 0; padding: 0; list-style: none; counter-reset: step; }
+.steps li { counter-increment: step; }
+.steps a { display: flex; gap: 12px; padding: 7px 0; font: 400 10px var(--mono); letter-spacing: .2em; color: var(--dim); transition: color .3s, transform .3s var(--ease); }
+.steps a::before { content: '0' counter(step); color: #2a2a2a; transition: color .3s; }
+.steps a.on { color: var(--fg); transform: translateX(6px); }
+.steps a.on::before { color: #19e6ff; }
+.steps + .rail { margin-top: 18px; }
+
+/* Headlines brighten word by word as they scroll up the screen */
+.js .headline .w { opacity: .16; transition: opacity .35s; }
+.js .headline .w.lit { opacity: 1; }
+
+[data-step] { scroll-margin-top: 120px; }
+.bio { max-width: 60ch; margin-bottom: 96px; }
+.bio p { margin: 0 0 18px; font: 300 17px/1.7 var(--sans); color: #bbb; }
+
+/* Mind map */
+.mind-head { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; margin-bottom: 16px; }
+.mind-head .hint { margin: 0; font-size: 10px; }
+.mind-stage { position: relative; height: clamp(420px, 62vh, 560px); border: 1px solid var(--line); background: radial-gradient(circle at 50% 50%, #0b0b0b, #000 70%); }
+.mind-canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
+.mind-canvas.dragging { cursor: grabbing; }
+.mind-info { position: absolute; left: 20px; bottom: 18px; max-width: min(340px, calc(100% - 40px)); pointer-events: none; }
+.mind-kicker { display: block; margin-bottom: 8px; color: #19e6ff; }
+.mind-title { margin: 0 0 6px; font: 400 20px/1.2 var(--sans); letter-spacing: -.01em; }
+.mind-note { margin: 0; font: 300 14px/1.55 var(--sans); color: #aaa; }
+.mind-info.swap { animation: info-in .35s var(--ease); }
+@keyframes info-in { from { opacity: 0; transform: translateY(6px); } }
+.js .mind-data { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mind-data { margin: 0; padding: 0; list-style: none; font: 300 15px/1.7 var(--sans); color: #bbb; }
 
 /* Experience: each project is a hard drive that ejects a card when opened */
 .drives { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 56px 24px; margin: 0; padding: 0; list-style: none; }
@@ -185,8 +219,6 @@ main, .end { position: relative; z-index: 1; }
   .intro p { font-size: 22px; }
   .object { width: max(220px, min(560px, 64vh, calc(100vw - 2 * (260px + var(--pad) + 16px)))); }
   .section { gap: 32px; padding: 128px var(--pad) 112px; }
-  .about-grid { grid-template-columns: 1fr 1fr; }
-  .about-grid .bio { grid-column: 1 / -1; }
   .drives { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 64px; }
   .drive:nth-child(odd) .card { left: 0; right: auto; margin-left: 0; }
   .drive:nth-child(even) .card { left: auto; right: 0; margin-left: 0; }
@@ -211,7 +243,12 @@ main, .end { position: relative; z-index: 1; }
   .section { grid-template-columns: 1fr; gap: 24px; padding: 96px var(--pad) 80px; }
   .sec-label { position: static; }
   .headline { margin-bottom: 40px; }
-  .about-grid { grid-template-columns: 1fr; gap: 36px; }
+  .steps, .rail { display: none; }
+  .bio { margin-bottom: 64px; }
+  .mind-head { flex-direction: column; gap: 8px; }
+  .mind-stage { height: auto; }
+  .mind-canvas { height: 400px; }
+  .mind-info { position: static; max-width: none; padding: 18px 18px 22px; border-top: 1px solid var(--line); }
   .drives { gap: 48px 16px; }
   .card { width: min(260px, calc(100vw - 2 * var(--pad))); }
   .card h3 { font-size: 20px; }

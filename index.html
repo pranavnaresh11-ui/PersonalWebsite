@@ -54,31 +54,58 @@
 
   <!-- 02 About -->
   <section class="section" id="about" data-section>
-    <div class="sec-label reveal"><span class="eyebrow">02 — ABOUT</span></div>
+    <div class="sec-label reveal">
+      <span class="eyebrow"><b class="tag">&lt;</b>02 — ABOUT<b class="tag">&gt;</b></span>
+      <ol class="steps">
+        <li><a href="#about-who">WHO</a></li>
+        <li><a href="#about-story">STORY</a></li>
+        <li><a href="#about-map">MIND MAP</a></li>
+      </ol>
+    </div>
     <div class="sec-body">
-      <h2 class="headline reveal" style="--i:1">A short line about who you are and what you care about building.</h2>
-      <div class="about-grid">
-        <div class="bio reveal" style="--i:2">
-          <p>Placeholder bio. Two or three sentences on where you are right now: what you're studying or working on, and what got you into it.</p>
-          <p>A second paragraph for the things that don't fit on a résumé: what you're curious about and what you want to learn next.</p>
+      <h2 class="headline reveal" id="about-who" data-step style="--i:1">A short line about who you are and what you care about building.</h2>
+
+      <div class="bio" id="about-story" data-step>
+        <p class="reveal" style="--i:1">Placeholder bio. Two or three sentences on where you are right now: what you're studying or working on, and what got you into it.</p>
+        <p class="reveal" style="--i:2">A second paragraph for the things that don't fit on a résumé: what you're curious about and what you want to learn next.</p>
+      </div>
+
+      <div class="mind" id="about-map" data-step>
+        <div class="mind-head reveal">
+          <span class="label">// MIND MAP</span>
+          <span class="hint"><span class="desk">[ DRAG THE NODES · HOVER TO READ ]</span><span class="touch">[ TAP A NODE TO READ ]</span></span>
         </div>
-        <div class="reveal" style="--i:3">
-          <span class="label">INTERESTS</span>
-          <ul class="plain">
-            <li>Product design</li>
-            <li>Software</li>
-            <li>Startups</li>
-            <li>Science</li>
-          </ul>
-        </div>
-        <div class="reveal" style="--i:4">
-          <span class="label">OFF THE CLOCK</span>
-          <ul class="plain">
-            <li>Sports</li>
-            <li>Music</li>
-            <li>Travel</li>
-            <li>Reading</li>
-          </ul>
+        <!-- The map is built from this list: edit the groups, items and data-note text here. -->
+        <ul class="mind-data">
+          <li><strong>Work</strong>
+            <ul>
+              <li data-note="Placeholder: what you research, where, and the question you're trying to answer.">Robotics research</li>
+              <li data-note="Placeholder: languages, tools and the kind of software you like building.">Software</li>
+              <li data-note="Placeholder: how you think about interfaces and the people using them.">Product design</li>
+            </ul>
+          </li>
+          <li><strong>Curious</strong>
+            <ul>
+              <li data-note="Placeholder: the kind of companies or ideas that pull you in.">Startups</li>
+              <li data-note="Placeholder: the fields you read about for fun.">Science</li>
+            </ul>
+          </li>
+          <li><strong>Off the clock</strong>
+            <ul>
+              <li data-note="Placeholder: how long you've played, your handicap, a favourite course.">Golf</li>
+              <li data-note="Placeholder: what you listen to or play.">Music</li>
+              <li data-note="Placeholder: places you've been or want to go.">Travel</li>
+              <li data-note="Placeholder: a book you'd recommend.">Reading</li>
+            </ul>
+          </li>
+        </ul>
+        <div class="mind-stage reveal" style="--i:1">
+          <canvas class="mind-canvas" aria-hidden="true"></canvas>
+          <div class="mind-info" aria-live="polite">
+            <span class="label mind-kicker">PRANAV</span>
+            <p class="mind-title">Everything branches out from here.</p>
+            <p class="mind-note">Drag a node to pull the map around. Hover or tap one to read about it.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -86,7 +113,7 @@
 
   <!-- 03 Experience -->
   <section class="section" id="experience" data-section>
-    <div class="sec-label reveal"><span class="eyebrow">03 — EXPERIENCE</span></div>
+    <div class="sec-label reveal"><span class="eyebrow"><b class="tag">&lt;</b>03 — EXPERIENCE<b class="tag">&gt;</b></span></div>
     <div class="sec-body">
       <span class="label reveal">SELECTED PROJECTS</span>
       <ol class="drives">
@@ -145,7 +172,7 @@
 
   <!-- 04 Contact -->
   <section class="section" id="contact" data-section>
-    <div class="sec-label reveal"><span class="eyebrow">04 — CONTACT</span></div>
+    <div class="sec-label reveal"><span class="eyebrow"><b class="tag">&lt;</b>04 — CONTACT<b class="tag">&gt;</b></span></div>
     <div class="sec-body">
       <h2 class="headline reveal" style="--i:1">Have a project, an opportunity, or just want to say hi?</h2>
       <a class="mail reveal" style="--i:2" href="mailto:pranav.naresh11@gmail.com">pranav.naresh11@gmail.com</a>
