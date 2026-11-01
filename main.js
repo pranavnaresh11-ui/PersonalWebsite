@@ -42,7 +42,7 @@ document.documentElement.classList.add('js');
   const pulses = Array.from({ length: 9 }, () => pulse(-Math.random() * 1.5));
 
   const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
-  let visible = true, jelly = 0, start = null, last = 0, settled = false;
+  let visible = true, jelly = 0, start = null, last = 0, settled = false, folded = false;
 
   stage.addEventListener('mousemove', (e) => {
     const r = stage.getBoundingClientRect();
@@ -124,8 +124,9 @@ document.documentElement.classList.add('js');
     const depth = (z) => 1 - (z + 1) / 2; // nearer is brighter
     ctx.lineWidth = 1;
 
-    // Net, fading out as it folds.
+    // Net, fading out as it folds. Tell the greeting once it is gone.
     const net = Math.pow(1 - e, 1.5);
+    if (e >= 1 && !folded) { folded = true; document.dispatchEvent(new Event('hero:folded')); }
     if (net > 0.01) {
       const N = nodes.map(([x, y, z]) => project(x, y, z));
       for (const [a, b] of links) {
@@ -191,10 +192,17 @@ document.documentElement.classList.add('js');
   const scramble = (s) => s.replace(/\S/g, () => GLYPHS[(Math.random() * GLYPHS.length) | 0]);
 
   // swap, while set, replaces the half-typed word with glitch text.
-  let n = 0, swap = null;
+  // edit, once set, strikes "portfolio" out and types "World" after it.
+  let n = 0, swap = null, edit = null;
   const render = () => {
-    const from = swap ? wordAt : n;
-    base.replaceChildren(text.slice(0, from), ...(swap ? [el(swap.err ? 'swap err' : 'swap', swap.text)] : []), el('caret'), el('rest', text.slice(n)));
+    if (edit) {
+      const after = text.slice(wordAt + WORD.length);
+      base.replaceChildren(text.slice(0, wordAt), el(edit.drawn ? 'strike drawn' : 'strike', WORD), ' ', el('world', edit.world),
+        ...(edit.done ? [after, el('caret')] : [el('caret'), el('rest', after)]));
+    } else {
+      const from = swap ? wordAt : n;
+      base.replaceChildren(text.slice(0, from), ...(swap ? [el(swap.err ? 'swap err' : 'swap', swap.text)] : []), el('caret'), el('rest', text.slice(n)));
+    }
     // Red and cyan ghost copies for the colour split, only while glitching.
     screen.querySelectorAll('.ghost').forEach((g) => g.remove());
     if (p.classList.contains('glitch')) for (const cls of ['ghost r', 'ghost c']) screen.append(Object.assign(base.cloneNode(true), { className: cls }));
@@ -206,7 +214,7 @@ document.documentElement.classList.add('js');
     setGlitch(true);
     for (let k = 0; k < 4; k++) { swap = { text: scramble(partial) }; render(); await wait(50); }
     swap = { text: FLASH, err: true }; render();
-    await wait(900);
+    await wait(750);
     for (let k = 0; k < 3; k++) { swap = { text: scramble(FLASH), err: true }; render(); await wait(50); }
     swap = null;
     setGlitch(false);
@@ -214,12 +222,34 @@ document.documentElement.classList.add('js');
 
   // Typing rhythm: quick runs of letters, a small hitch between words, the odd hesitation,
   // and a longer beat after a sentence ends.
+  // Paced so the line is done by the time the hero's neural net folds away (about 5.4s).
   const delay = (ch) => {
-    if (/[!.]/.test(ch)) return 520;
-    if (ch === ',') return 260;
-    if (ch === ' ') return 110 + Math.random() * 90;
-    return 50 + Math.random() * 60 + (Math.random() < 0.08 ? 200 : 0);
+    if (/[!.]/.test(ch)) return 340;
+    if (ch === ',') return 200;
+    if (ch === ' ') return 70 + Math.random() * 60;
+    return 35 + Math.random() * 35 + (Math.random() < 0.06 ? 140 : 0);
   };
+
+  // Once the line is typed and the hero's neural net has folded away, cross out "portfolio"
+  // and type "World" in its place.
+  const REPLACE = 'World';
+  let typedOut = false, folded = false;
+  const rewrite = async () => {
+    if (!typedOut || !folded || edit || wordAt < 0) return;
+    p.querySelector('.sr-only').textContent = text.slice(0, wordAt) + REPLACE + text.slice(wordAt + WORD.length);
+    if (reduceMotion) { edit = { drawn: true, world: REPLACE, done: true }; return render(); }
+    edit = { drawn: false, world: '', done: false };
+    render();
+    await wait(550);
+    edit.drawn = true;
+    await wait(250);
+    for (const ch of REPLACE) { edit.world += ch; render(); await wait(90 + Math.random() * 60); }
+    edit.done = true;
+    setGlitch(true);
+    await wait(220);
+    setGlitch(false);
+  };
+  document.addEventListener('hero:folded', () => { folded = true; rewrite(); }, { once: true });
 
   const step = async () => {
     n++;
@@ -227,6 +257,8 @@ document.documentElement.classList.add('js');
     if (n === flashAt) { await wait(120); await flash(); }
     if (n < text.length) return setTimeout(step, delay(text[n - 1]));
     p.classList.add('typed-out');
+    typedOut = true;
+    rewrite();
     for (;;) {
       await wait(2500 + Math.random() * 3500);
       setGlitch(true);
@@ -235,8 +267,8 @@ document.documentElement.classList.add('js');
     }
   };
 
-  if (reduceMotion) { n = text.length; render(); p.classList.add('typed-out'); }
-  else { render(); setTimeout(step, 700); }
+  if (reduceMotion) { n = text.length; render(); p.classList.add('typed-out'); typedOut = true; rewrite(); }
+  else { render(); setTimeout(step, 450); }
 })();
 
 // Background: faint electric-cyan and terminal-green streaks flying across the page.

@@ -58,6 +58,11 @@ main, .end { position: relative; z-index: 1; }
 .typing.glitch .ghost.c { color: #19e6ff; animation: slice-c .3s steps(1) infinite; }
 .typing .swap.err { font: 500 .62em var(--mono); letter-spacing: .04em; color: #ff2a55; }
 .typing .base .swap.err { background: rgba(255, 42, 85, .14); outline: 1px solid rgba(255, 42, 85, .6); padding: 0 .25em; text-shadow: 2px 0 #19e6ff; }
+/* "portfolio" gets a red line drawn through it, then "World" is typed after it */
+.typing .strike { position: relative; color: var(--muted); }
+.typing .strike::after { content: ''; position: absolute; left: -2px; right: -2px; top: 55%; height: 2px; background: #ff2a55; transform-origin: left; transform: scaleX(0); animation: strike .5s var(--ease) forwards; }
+.typing .strike.drawn::after { animation: none; transform: none; }
+@keyframes strike { to { transform: scaleX(1); } }
 @keyframes jitter { 50% { transform: translateX(2px) skewX(-3deg); } }
 @keyframes slice-r { 0% { clip-path: inset(8% 0 72% 0); transform: translateX(-5px); } 25% { clip-path: inset(55% 0 22% 0); transform: translateX(4px); } 50% { clip-path: inset(82% 0 4% 0); transform: translateX(-3px); } 75% { clip-path: inset(30% 0 52% 0); transform: translateX(6px); } }
 @keyframes slice-c { 0% { clip-path: inset(62% 0 18% 0); transform: translateX(5px); } 30% { clip-path: inset(14% 0 66% 0); transform: translateX(-4px); } 60% { clip-path: inset(40% 0 40% 0); transform: translateX(3px); } 85% { clip-path: inset(76% 0 8% 0); transform: translateX(-6px); } }
