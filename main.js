@@ -17,12 +17,12 @@ document.documentElement.classList.add('js');
     if (i < LAT) edges.push([k, (i + 1) * LON + j]);
   }
 
-  // Neural net: layers of nodes, each wired to every node in the next layer.
-  const LAYERS = [4, 6, 7, 6, 4], nodes = [], links = [], first = [];
+  // Neural net: a flat, textbook diagram. Layers of nodes, each wired to every node in the next.
+  const LAYERS = [3, 4, 4, 2], nodes = [], links = [], first = [];
   LAYERS.forEach((n, l) => {
     first.push(nodes.length);
     for (let k = 0; k < n; k++) {
-      nodes.push([-0.95 + (l * 1.9) / (LAYERS.length - 1), (k - (n - 1) / 2) * 0.34, 0.18 * Math.sin(l * 1.7 + k * 2.3)]);
+      nodes.push([-0.7 + (l * 1.4) / (LAYERS.length - 1), (k - (n - 1) / 2) * 0.3, 0]);
     }
   });
   LAYERS.forEach((n, l) => {
@@ -88,14 +88,14 @@ document.documentElement.classList.add('js');
     const f = reduceMotion ? 1 : Math.min(1, Math.max(0, (at - NET) / FOLD));
     const e = f < 0.5 ? 4 * f * f * f : 1 - Math.pow(-2 * f + 2, 3) / 2;
 
-    // The net faces you with a gentle sway; it spins up into the sphere's rotation as it folds.
-    const ay = lerp(Math.sin(at * 0.5) * 0.35 + smooth.x * 0.8, t * 0.22 + smooth.x * 1.2, e) + e * (1 - e) * 2.5;
-    const ax = lerp(0.08 + smooth.y * 0.5, 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1, e);
+    // The net lies flat, facing you; it spins up into the sphere's rotation as it folds.
+    const ay = lerp(0, t * 0.22 + smooth.x * 1.2, e) + e * (1 - e) * 2.5;
+    const ax = lerp(0, 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1, e);
     const ca = Math.cos(ay), sa = Math.sin(ay), cb = Math.cos(ax), sb = Math.sin(ax);
     // The canvas is wider than the sphere needs so the net has room. The net sits right of centre,
     // clear of the intro text but inside the window, and slides back to centre as it folds.
     const S = Math.min(W, H) * 0.36;
-    const reach = S * 1.42; // half the net's width, with room for the glowing pulses
+    const reach = S * 0.85; // half the net's width, with room for the glowing pulses
     const shift = Math.max(0, Math.min(W / 2 - reach, innerWidth - 12 - left - W / 2 - reach));
     const cx = W / 2 + shift * (1 - e);
 
@@ -136,7 +136,7 @@ document.documentElement.classList.add('js');
     if (net > 0.01) {
       const N = nodes.map(([x, y, z]) => project(x, y, z));
       for (const [a, b] of links) {
-        ctx.strokeStyle = `rgba(255,255,255,${((0.05 + 0.12 * depth((N[a][2] + N[b][2]) / 2)) * net).toFixed(3)})`;
+        ctx.strokeStyle = `rgba(255,255,255,${(0.2 * net).toFixed(3)})`;
         ctx.beginPath(); ctx.moveTo(N[a][0], N[a][1]); ctx.lineTo(N[b][0], N[b][1]); ctx.stroke();
       }
       for (const q of pulses) {
@@ -154,12 +154,12 @@ document.documentElement.classList.add('js');
         ctx.fillStyle = `rgba(${c},${net.toFixed(3)})`;
         ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
       }
-      N.forEach(([x, y, z], n) => {
+      N.forEach(([x, y], n) => {
         glow[n] *= Math.exp(-dt * 3);
         const g = Math.round(glow[n] * 255);
         ctx.fillStyle = `rgba(${g},${g},${g},${net.toFixed(3)})`;
-        ctx.strokeStyle = `rgba(255,255,255,${((0.35 + 0.55 * depth(z)) * net).toFixed(3)})`;
-        ctx.beginPath(); ctx.arc(x, y, 3.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.strokeStyle = `rgba(255,255,255,${(0.8 * net).toFixed(3)})`;
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       });
     }
 
