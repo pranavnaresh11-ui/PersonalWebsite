@@ -42,7 +42,7 @@ document.documentElement.classList.add('js');
   const pulses = Array.from({ length: 9 }, () => pulse(-Math.random() * 1.5));
 
   const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
-  let visible = true, jelly = 0, start = null, last = 0, settled = false, folded = false;
+  let visible = true, jelly = 0, start = null, last = 0, settled = false, left = 0;
 
   stage.addEventListener('mousemove', (e) => {
     const r = stage.getBoundingClientRect();
@@ -61,7 +61,9 @@ document.documentElement.classList.add('js');
     canvas.height = Math.round(canvas.clientHeight * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
-  new ResizeObserver(resize).observe(canvas);
+  const measure = () => { resize(); left = canvas.getBoundingClientRect().left; };
+  new ResizeObserver(measure).observe(canvas);
+  addEventListener('resize', measure);
 
   const lerp = (a, b, e) => a + (b - a) * e;
   const NET = 4, FOLD = 1.4, HOP = Math.PI / 2.2, HEIGHTS = [1, 0.6, 0.32];
@@ -90,9 +92,12 @@ document.documentElement.classList.add('js');
     const ay = lerp(Math.sin(at * 0.5) * 0.35 + smooth.x * 0.8, t * 0.22 + smooth.x * 1.2, e) + e * (1 - e) * 2.5;
     const ax = lerp(0.08 + smooth.y * 0.5, 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1, e);
     const ca = Math.cos(ay), sa = Math.sin(ay), cb = Math.cos(ax), sb = Math.sin(ax);
-    // The net sits as far right as fits in the canvas, clear of the intro text, and slides back
-    // to centre as it folds.
-    const S = Math.min(W, H) * 0.36, cx = W / 2 + Math.max(0, W / 2 - S * 1.07 - 6) * (1 - e);
+    // The canvas is wider than the sphere needs so the net has room. The net sits right of centre,
+    // clear of the intro text but inside the window, and slides back to centre as it folds.
+    const S = Math.min(W, H) * 0.36;
+    const reach = S * 1.42; // half the net's width, with room for the glowing pulses
+    const shift = Math.max(0, Math.min(W / 2 - reach, innerWidth - 12 - left - W / 2 - reach));
+    const cx = W / 2 + shift * (1 - e);
 
     // Bounce three times once folded, each hop lower than the last, squashing wide and flat on
     // landing and stretching a touch in the air; then wobble to rest and just rotate.
@@ -126,9 +131,8 @@ document.documentElement.classList.add('js');
     const depth = (z) => 1 - (z + 1) / 2; // nearer is brighter
     ctx.lineWidth = 1;
 
-    // Net, fading out as it folds. Tell the greeting once it is gone.
+    // Net, fading out as it folds.
     const net = Math.pow(1 - e, 1.5);
-    if (e >= 1 && !folded) { folded = true; document.dispatchEvent(new Event('hero:folded')); }
     if (net > 0.01) {
       const N = nodes.map(([x, y, z]) => project(x, y, z));
       for (const [a, b] of links) {
@@ -177,13 +181,13 @@ document.documentElement.classList.add('js');
 })();
 
 // Greeting: type the intro line out when the page opens. Halfway through "portfolio" it glitches
-// like a hacked terminal and flashes "robotics research", then carries on; once typed, it keeps
+// like a hacked terminal and flashes "tech, robotics, bayesian optimization", then carries on; once typed, it keeps
 // glitching briefly every few seconds.
 (() => {
   const p = document.querySelector('.typing');
   const text = p.textContent.trim();
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const WORD = 'portfolio', FLASH = 'robotics research', GLYPHS = '!<>-_\/[]{}=+*^?#%01';
+  const WORD = 'portfolio', FLASH = 'tech, robotics, bayesian optimization', GLYPHS = '!<>-_\/[]{}=+*^?#%01';
   const wordAt = text.indexOf(WORD), flashAt = wordAt < 0 ? -1 : wordAt + 5;
 
   p.innerHTML = '<span class="sr-only"></span><span class="screen" aria-hidden="true"><span class="base"></span></span>';
@@ -194,17 +198,10 @@ document.documentElement.classList.add('js');
   const scramble = (s) => s.replace(/\S/g, () => GLYPHS[(Math.random() * GLYPHS.length) | 0]);
 
   // swap, while set, replaces the half-typed word with glitch text.
-  // edit, once set, strikes "portfolio" out and types "World" after it.
-  let n = 0, swap = null, edit = null;
+  let n = 0, swap = null;
   const render = () => {
-    if (edit) {
-      const after = text.slice(wordAt + WORD.length);
-      base.replaceChildren(text.slice(0, wordAt), el(edit.drawn ? 'strike drawn' : 'strike', WORD), ' ', el('world', edit.world),
-        ...(edit.done ? [after, el('caret')] : [el('caret'), el('rest', after)]));
-    } else {
-      const from = swap ? wordAt : n;
-      base.replaceChildren(text.slice(0, from), ...(swap ? [el(swap.err ? 'swap err' : 'swap', swap.text)] : []), el('caret'), el('rest', text.slice(n)));
-    }
+    const from = swap ? wordAt : n;
+    base.replaceChildren(text.slice(0, from), ...(swap ? [el(swap.err ? 'swap err' : 'swap', swap.text)] : []), el('caret'), el('rest', text.slice(n)));
     // Red and cyan ghost copies for the colour split, only while glitching.
     screen.querySelectorAll('.ghost').forEach((g) => g.remove());
     if (p.classList.contains('glitch')) for (const cls of ['ghost r', 'ghost c']) screen.append(Object.assign(base.cloneNode(true), { className: cls }));
@@ -224,7 +221,6 @@ document.documentElement.classList.add('js');
 
   // Typing rhythm: quick runs of letters, a small hitch between words, the odd hesitation,
   // and a longer beat after a sentence ends.
-  // Paced so the line is done by the time the hero's neural net folds away (about 5.4s).
   const delay = (ch) => {
     if (/[!.]/.test(ch)) return 340;
     if (ch === ',') return 200;
@@ -232,35 +228,12 @@ document.documentElement.classList.add('js');
     return 35 + Math.random() * 35 + (Math.random() < 0.06 ? 140 : 0);
   };
 
-  // Once the line is typed and the hero's neural net has folded away, cross out "portfolio"
-  // and type "World" in its place.
-  const REPLACE = 'World';
-  let typedOut = false, folded = false;
-  const rewrite = async () => {
-    if (!typedOut || !folded || edit || wordAt < 0) return;
-    p.querySelector('.sr-only').textContent = text.slice(0, wordAt) + REPLACE + text.slice(wordAt + WORD.length);
-    if (reduceMotion) { edit = { drawn: true, world: REPLACE, done: true }; return render(); }
-    edit = { drawn: false, world: '', done: false };
-    render();
-    await wait(550);
-    edit.drawn = true;
-    await wait(250);
-    for (const ch of REPLACE) { edit.world += ch; render(); await wait(90 + Math.random() * 60); }
-    edit.done = true;
-    setGlitch(true);
-    await wait(220);
-    setGlitch(false);
-  };
-  document.addEventListener('hero:folded', () => { folded = true; rewrite(); }, { once: true });
-
   const step = async () => {
     n++;
     render();
     if (n === flashAt) { await wait(120); await flash(); }
     if (n < text.length) return setTimeout(step, delay(text[n - 1]));
     p.classList.add('typed-out');
-    typedOut = true;
-    rewrite();
     for (;;) {
       await wait(2500 + Math.random() * 3500);
       setGlitch(true);
@@ -269,7 +242,7 @@ document.documentElement.classList.add('js');
     }
   };
 
-  if (reduceMotion) { n = text.length; render(); p.classList.add('typed-out'); typedOut = true; rewrite(); }
+  if (reduceMotion) { n = text.length; render(); p.classList.add('typed-out'); }
   else { render(); setTimeout(step, 450); }
 })();
 
