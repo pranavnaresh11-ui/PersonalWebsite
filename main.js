@@ -1,7 +1,6 @@
 document.documentElement.classList.add('js');
 
-// Hero object: opens as a small neural network with signals firing through it, folds up into
-// the wireframe sphere, bounces three times, then just rotates and tilts toward the cursor.
+// Wireframe sphere: lat/long grid, rotates continuously and tilts toward the cursor.
 (() => {
   const stage = document.getElementById('home');
   const canvas = document.getElementById('sphere');
@@ -17,33 +16,8 @@ document.documentElement.classList.add('js');
     if (i < LAT) edges.push([k, (i + 1) * LON + j]);
   }
 
-  // Neural net: a flat, textbook diagram, wide and fully connected: an input layer, three hidden
-  // layers and an output layer, each node wired to every node in the next.
-  const LAYERS = [8, 9, 9, 9, 4], nodes = [], links = [], first = [];
-  LAYERS.forEach((n, l) => {
-    first.push(nodes.length);
-    for (let k = 0; k < n; k++) {
-      nodes.push([-1.3 + (l * 2.6) / (LAYERS.length - 1), (k - (n - 1) / 2) * 0.2, 0]);
-    }
-  });
-  LAYERS.forEach((n, l) => {
-    if (l === LAYERS.length - 1) return;
-    for (let a = 0; a < n; a++) for (let b = 0; b < LAYERS[l + 1]; b++) links.push([first[l] + a, first[l + 1] + b]);
-  });
-  // Every sphere vertex starts out on a node, so folding looks like the net spreading into the sphere.
-  const home = verts.map((_, v) => {
-    const i = Math.floor(v / LON), l = Math.floor(((v % LON) * LAYERS.length) / LON);
-    return first[l] + Math.floor((i * LAYERS[l]) / (LAT + 1));
-  });
-
-  // Signals hop node to node from the input layer to the output layer; nodes flash as they arrive.
-  const glow = nodes.map(() => 0);
-  const pick = (l) => first[l] + ((Math.random() * LAYERS[l]) | 0);
-  const pulse = (p = 0) => ({ l: 0, a: pick(0), b: pick(1), p, cyan: Math.random() < 0.55 });
-  const pulses = Array.from({ length: 9 }, () => pulse(-Math.random() * 1.5));
-
   const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
-  let visible = true, jelly = 0, start = null, last = 0, settled = false, left = 0;
+  let visible = true, jelly = 0, start = null, settled = false;
 
   stage.addEventListener('mousemove', (e) => {
     const r = stage.getBoundingClientRect();
@@ -62,20 +36,13 @@ document.documentElement.classList.add('js');
     canvas.height = Math.round(canvas.clientHeight * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
-  const measure = () => { resize(); left = canvas.getBoundingClientRect().left; };
-  new ResizeObserver(measure).observe(canvas);
-  addEventListener('resize', measure);
-
-  const lerp = (a, b, e) => a + (b - a) * e;
-  const NET = 4, FOLD = 1.4, HOP = Math.PI / 2.2, HEIGHTS = [1, 0.6, 0.32];
+  new ResizeObserver(resize).observe(canvas);
 
   const draw = (ts) => {
     requestAnimationFrame(draw);
     if (!visible) return;
 
     const t = reduceMotion ? 0 : ts / 1000;
-    const dt = Math.min(0.05, t - last);
-    last = t;
     const W = canvas.clientWidth, H = canvas.clientHeight;
     ctx.clearRect(0, 0, W, H);
 
@@ -83,107 +50,53 @@ document.documentElement.classList.add('js');
     smooth.x += dx * 0.06;
     smooth.y += dy * 0.06;
 
-    // Timeline: the net for NET seconds, then the fold (eased 0 to 1), then the bounce.
-    if (start === null) start = t;
-    const at = t - start;
-    const f = reduceMotion ? 1 : Math.min(1, Math.max(0, (at - NET) / FOLD));
-    const e = f < 0.5 ? 4 * f * f * f : 1 - Math.pow(-2 * f + 2, 3) / 2;
-
-    // The net lies flat, facing you; it spins up into the sphere's rotation as it folds.
-    const ay = lerp(0, t * 0.22 + smooth.x * 1.2, e) + e * (1 - e) * 2.5;
-    const ax = lerp(0, 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1, e);
+    const ay = t * 0.22 + smooth.x * 1.2;
+    const ax = 0.35 + smooth.y * 0.8 + Math.sin(t * 0.3) * 0.1;
     const ca = Math.cos(ay), sa = Math.sin(ay), cb = Math.cos(ax), sb = Math.sin(ax);
-    // The canvas is wider than the sphere needs so the net has room. The net sits right of centre,
-    // clear of the intro text but inside the window, and slides back to centre as it folds.
-    const S = Math.min(W, H) * 0.36;
-    const reach = S * 1.62; // half the net's width, with room for the output arrows
-    const shift = Math.max(0, Math.min(W / 2 - reach, innerWidth - 12 - left - W / 2 - reach));
-    const cx = W / 2 + shift * (1 - e);
+    const S = Math.min(W, H) * 0.36, cx = W / 2;
 
-    // Bounce three times once folded, each hop lower than the last, squashing wide and flat on
-    // landing and stretching a touch in the air; then wobble to rest and just rotate.
+    // Bounce three times when the page opens, each hop lower than the last, squashing wide and
+    // flat on landing and stretching a touch in the air; then wobble to rest and just rotate.
     // The bottom stays planted while it squashes.
-    const bt = at - NET - FOLD;
+    if (start === null) start = t;
+    const bt = t - start, HOP = Math.PI / 2.2, HEIGHTS = [1, 0.6, 0.32];
     let hop = 0, land = 0;
-    if (reduceMotion || bt < 0) {
-      // not bouncing
+    if (reduceMotion) {
+      // no bounce
     } else if (bt < HOP * 3) {
       const amp = HEIGHTS[Math.floor(bt / HOP)], s = Math.abs(Math.sin(bt * 2.2));
       hop = s * amp;
       land = Math.pow(1 - s, 6) * amp;
     } else {
-      const k = bt - HOP * 3;
-      land = HEIGHTS[2] * Math.exp(-k * 7) * Math.cos(k * 16);
+      const e = bt - HOP * 3;
+      land = HEIGHTS[2] * Math.exp(-e * 7) * Math.cos(e * 16);
     }
     // Jelly: while bouncing, moving the cursor (or clicking) sets the surface rippling.
     // Once the bounce has settled the sphere stays firm.
     settled = reduceMotion || bt > HOP * 3 + 0.6;
-    jelly = settled || bt < 0 ? jelly * 0.85 : Math.min(0.09, jelly * 0.95 + Math.hypot(dx, dy) * 0.02);
+    jelly = settled ? jelly * 0.85 : Math.min(0.09, jelly * 0.95 + Math.hypot(dx, dy) * 0.02);
 
     const sy = 1 - 0.13 * land + 0.03 * hop, sx = 1 + 0.09 * land - 0.015 * hop;
     const cy = H / 2 - hop * S * 0.12 + S * (1 - sy);
 
-    const project = (x, y, z) => {
+    const P = verts.map(([x, y, z]) => {
+      const k = 1 + jelly * Math.sin(y * 5 + t * 11) * Math.cos(x * 3 - t * 7);
+      x *= k; y *= k; z *= k;
       const x1 = x * ca - z * sa, z1 = x * sa + z * ca;
       const y1 = y * cb - z1 * sb, z2 = y * sb + z1 * cb;
-      const p = 3 / (3 + z2);
-      return [cx + x1 * S * p * sx, cy + y1 * S * p * sy, z2];
-    };
-    const depth = (z) => 1 - (z + 1) / 2; // nearer is brighter
+      const f = 3 / (3 + z2);
+      return [cx + x1 * S * f * sx, cy + y1 * S * f * sy, z2];
+    });
+
     ctx.lineWidth = 1;
-
-    // Net, fading out as it folds.
-    const net = Math.pow(1 - e, 1.5);
-    if (net > 0.01) {
-      const N = nodes.map(([x, y, z]) => project(x, y, z));
-      for (const [a, b] of links) {
-        ctx.strokeStyle = `rgba(255,255,255,${(0.14 * net).toFixed(3)})`;
-        ctx.beginPath(); ctx.moveTo(N[a][0], N[a][1]); ctx.lineTo(N[b][0], N[b][1]); ctx.stroke();
-      }
-      for (const q of pulses) {
-        q.p += dt * 1.8;
-        if (q.p >= 1) {
-          glow[q.b] = 1;
-          if (q.l + 2 < LAYERS.length) Object.assign(q, { l: q.l + 1, a: q.b, b: pick(q.l + 2), p: 0 });
-          else Object.assign(q, pulse(-Math.random() * 0.6));
-        }
-        if (q.p < 0) continue;
-        const x = lerp(N[q.a][0], N[q.b][0], q.p), y = lerp(N[q.a][1], N[q.b][1], q.p);
-        const c = q.cyan ? '25,230,255' : '57,255,120';
-        ctx.fillStyle = `rgba(${c},${(0.18 * net).toFixed(3)})`;
-        ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = `rgba(${c},${net.toFixed(3)})`;
-        ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
-      }
-      const r = Math.min(5, S * 0.06);
-      N.forEach(([x, y], n) => {
-        glow[n] *= Math.exp(-dt * 3);
-        const g = Math.round(glow[n] * 255);
-        ctx.fillStyle = `rgba(${g},${g},${g},${net.toFixed(3)})`;
-        ctx.strokeStyle = `rgba(255,255,255,${(0.8 * net).toFixed(3)})`;
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      });
-      // An arrow out of each output node.
-      ctx.strokeStyle = `rgba(255,255,255,${(0.6 * net).toFixed(3)})`;
-      for (let n = first[LAYERS.length - 1]; n < nodes.length; n++) {
-        const [x, y] = N[n], a = x + r + 3, b = x + r + S * 0.24;
-        ctx.beginPath(); ctx.moveTo(a, y); ctx.lineTo(b, y);
-        ctx.moveTo(b - 4, y - 3); ctx.lineTo(b, y); ctx.lineTo(b - 4, y + 3); ctx.stroke();
-      }
-    }
-
-    // Sphere, spreading out from the net's nodes as it folds.
-    if (e > 0) {
-      const P = verts.map(([x, y, z], v) => {
-        const k = 1 + jelly * Math.sin(y * 5 + t * 11) * Math.cos(x * 3 - t * 7);
-        const [nx, ny, nz] = nodes[home[v]];
-        return project(lerp(nx, x * k, e), lerp(ny, y * k, e), lerp(nz, z * k, e));
-      });
-      for (const [i, j] of edges) {
-        const alpha = (0.12 + 0.7 * depth((P[i][2] + P[j][2]) / 2)) * e;
-        ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
-        ctx.beginPath(); ctx.moveTo(P[i][0], P[i][1]); ctx.lineTo(P[j][0], P[j][1]); ctx.stroke();
-      }
+    for (const [i, j] of edges) {
+      const z = (P[i][2] + P[j][2]) / 2;
+      const alpha = 0.12 + 0.7 * (1 - (z + 1) / 2); // nearer edges are brighter
+      ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+      ctx.beginPath();
+      ctx.moveTo(P[i][0], P[i][1]);
+      ctx.lineTo(P[j][0], P[j][1]);
+      ctx.stroke();
     }
   };
   requestAnimationFrame(draw);
