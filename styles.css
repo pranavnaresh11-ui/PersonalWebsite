@@ -68,7 +68,7 @@ main, .end { position: relative; z-index: 1; }
 .object canvas { width: 100%; height: 100%; display: block; }
 
 /* Photo leaning in from the right edge of the home page, at an angle */
-.peek { position: absolute; z-index: 1; right: 0; bottom: 4vh; height: min(66vh, 52vw); width: auto; transform-origin: bottom right; transform: translateX(48%) rotate(-24deg); pointer-events: none; user-select: none; animation: peek-in 1.1s var(--ease) .5s backwards; }
+.peek { position: absolute; z-index: 1; right: 0; bottom: 4vh; height: min(66vh, 52vw); width: auto; transform-origin: bottom right; transform: translateX(48%) rotate(-24deg); filter: grayscale(1) contrast(1.1); pointer-events: none; user-select: none; animation: peek-in 1.1s var(--ease) .5s backwards; }
 @keyframes peek-in { from { transform: translateX(110%) rotate(-6deg); } }
 
 .prompt { position: absolute; bottom: max(96px, calc(50% - min(310px, 35vh) - 28px)); left: 50%; transform: translateX(-50%); font: 400 11px/1 var(--mono); letter-spacing: .3em; color: var(--muted); white-space: nowrap; transition: color .2s; }
