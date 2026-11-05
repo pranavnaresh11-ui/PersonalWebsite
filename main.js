@@ -307,6 +307,66 @@ document.documentElement.classList.add('js');
   });
 })();
 
+// Home photo: slides back out of the page as soon as you scroll, and returns at the very top.
+(() => {
+  const peek = document.querySelector('.peek');
+  const update = () => peek.classList.toggle('gone', scrollY > 4);
+  addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
+// About: the first time it scrolls into view it boots like a terminal for about two seconds,
+// prints that the profile was retrieved, then clears away to show the section.
+(() => {
+  const about = document.getElementById('about');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  about.classList.add('booting');
+  const term = Object.assign(document.createElement('div'), {
+    className: 'term',
+    innerHTML: '<div class="term-bar"><i></i><i></i><i></i><span>PRANAV@PORTFOLIO: ~</span></div><div class="term-body"></div>',
+  });
+  term.setAttribute('aria-hidden', 'true');
+  about.querySelector('.sec-body').prepend(term);
+  const body = term.querySelector('.term-body');
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const line = (html = '') => {
+    body.querySelector('.cur')?.remove();
+    const l = document.createElement('div');
+    l.innerHTML = html;
+    body.append(l);
+    return l;
+  };
+  const cursor = (l) => l.append(Object.assign(document.createElement('span'), { className: 'cur' }));
+  const bar = (p) => '█'.repeat(Math.round(p * 20)) + '░'.repeat(20 - Math.round(p * 20));
+
+  const boot = async () => {
+    const cmd = line('<span class="ps">pranav@portfolio:~$</span> ');
+    for (const ch of './about --load') { cmd.append(ch); await wait(22); }
+    await wait(120);
+    line('connecting to <span class="hi">pranav.local</span> ... ok');
+    await wait(180);
+    const load = line();
+    for (let k = 0; k <= 20; k++) {
+      load.textContent = `fetching profile [${bar(k / 20)}] ${String(k * 5).padStart(3)}%`;
+      await wait(45 + Math.random() * 25);
+    }
+    line('decrypting bio.txt ... ok');
+    await wait(180);
+    cursor(line('<span class="ok">✓ RETRIEVED</span> 200 OK · about.md loaded'));
+    await wait(550);
+    term.classList.add('done');
+    about.classList.remove('booting');
+    setTimeout(() => term.remove(), 500);
+  };
+
+  const io = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting) return;
+    io.disconnect();
+    boot();
+  }, { rootMargin: '0px 0px -35% 0px' });
+  io.observe(about);
+})();
+
 // Fade section content in as it scrolls into view.
 (() => {
   const io = new IntersectionObserver((entries) => {
