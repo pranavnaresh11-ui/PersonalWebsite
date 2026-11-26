@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pranav Naresh — Robotics Research &amp; Hardware Systems</title>
-<meta name="description" content="Pranav Naresh researches vibration-driven tensegrity robot locomotion with Bayesian optimization, computer vision and IMU telemetry, builds edge-AI optical sensors using Background-Oriented Schlieren imaging, and writes full-stack software.">
-<meta name="theme-color" content="#F4F1EA">
+<title>Pranav Naresh</title>
+<meta name="description" content="Pranav Naresh works on robotics, optics and adaptive systems: vibration-driven tensegrity robot locomotion, Background-Oriented Schlieren optical sensing, and the software that connects them.">
+<meta name="theme-color" content="#111111">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Pranav Naresh",
-  "jobTitle": "Robotics Researcher",
-  "description": "Independent researcher in vibration-driven tensegrity robot locomotion and builder of edge-AI optical sensing hardware and full-stack software.",
+  "description": "Independent robotics researcher working on vibration-driven tensegrity robot locomotion, Background-Oriented Schlieren optical sensing and software.",
   "email": "mailto:pranav.naresh11@gmail.com",
   "image": "assets/pranav.png",
+  "address": { "@type": "PostalAddress", "addressLocality": "Cary", "addressRegion": "NC", "addressCountry": "US" },
   "sameAs": [
     "https://www.linkedin.com/in/pranav-naresh/",
     "https://github.com/pranavnaresh11-ui"
@@ -28,163 +28,88 @@
     "Robot locomotion",
     "Bayesian optimization",
     "Computer vision",
-    "IMU telemetry",
     "Background-Oriented Schlieren imaging",
     "Edge AI",
-    "Full-stack software engineering",
-    "Competitive robotics"
+    "Software engineering"
   ]
 }
 </script>
 </head>
 <body>
-<!-- Three textured stripes and the column guide rails run behind the whole page -->
-<div class="stripes" aria-hidden="true"><i></i><i></i><i></i></div>
-<div class="rails" aria-hidden="true"></div>
+<!-- Black, grey and red bands run the full height of the page; the layout's three columns sit on them -->
+<div class="bands" aria-hidden="true"></div>
 
-<header class="bar" id="bar">
-  <a class="name" href="#top">PRANAV NARESH</a>
-  <nav class="pill" aria-label="Sections">
+<header class="grid head">
+  <a class="name" href="#top">Pranav Naresh</a>
+  <span aria-hidden="true"></span>
+  <nav aria-label="Sections">
     <a href="#about">About</a>
     <a href="#research">Research</a>
-    <a href="#work">Work</a>
-    <a href="#notes">Notes</a>
+    <a href="#writing">Writing</a>
+    <a href="mailto:pranav.naresh11@gmail.com">Email</a>
   </nav>
-  <a class="btn btn-sm" href="mailto:pranav.naresh11@gmail.com">Contact</a>
 </header>
 
 <main id="top">
-  <!-- Hero -->
-  <section class="hero" aria-labelledby="hero-title">
-    <p class="eyebrow fade"><span class="dot" aria-hidden="true"></span>Robotics Research &amp; Hardware Systems</p>
-    <h1 id="hero-title" class="fade">Building adaptive systems<br><span class="muted">from hardware to edge AI.</span></h1>
-    <p class="sub fade">I'm Pranav Naresh. I study how tensegrity robots learn to move across new terrain, build optical sensors that see what the eye can't, and write the software that ties it together, <mark>from the circuit board up.</mark></p>
-    <div class="cta fade">
-      <a class="btn" href="#research">Read My Work</a>
-      <p class="quick">
-        <a href="https://github.com/pranavnaresh11-ui" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true"> · </span><a href="https://www.linkedin.com/in/pranav-naresh/" target="_blank" rel="noopener">LinkedIn</a><span aria-hidden="true"> · </span><a href="mailto:pranav.naresh11@gmail.com">pranav.naresh11@gmail.com</a>
+  <section class="grid hero" aria-labelledby="hero-title">
+    <h1 id="hero-title">Pranav Naresh<br><em>Robotics, optics, &amp; adaptive systems.</em></h1>
+    <p class="intro">I work on robots that move without wheels or legs: vibration-driven tensegrity structures that learn, through Bayesian optimization and careful measurement, how to cross ground they have never seen. I also build optical instruments, most recently a Background-Oriented Schlieren sensor that makes heat and gas flow visible to a small on-device model, along with the software that holds these projects together. When I'm away from the bench, I'm usually on a golf course, thinking about the mechanics of a swing.</p>
+  </section>
+
+  <div class="grid body">
+    <section class="cell" id="about" aria-labelledby="about-title">
+      <h2 id="about-title">About</h2>
+      <img class="portrait" src="assets/pranav.png" alt="Portrait of Pranav Naresh" width="264" height="491">
+      <p>I'm a student in Cary, North Carolina, doing independent robotics research alongside dual-enrollment college coursework.</p>
+      <p>Most of my time goes to hardware: designing, wiring and testing the machines I study, then writing the code that measures them. My current focus is gait adaptation in tensegrity robots, and making the Mirage sensor small and inexpensive enough to be useful in manufacturing.</p>
+      <p class="links">
+        <a href="https://github.com/pranavnaresh11-ui" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/pranav-naresh/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="mailto:pranav.naresh11@gmail.com">pranav.naresh11@gmail.com</a>
       </p>
-    </div>
-  </section>
+    </section>
 
-  <!-- About -->
-  <section class="col" id="about" aria-labelledby="about-title">
-    <header class="sec-head fade">
-      <span class="idx">01</span><h2 id="about-title">About</h2>
-    </header>
-    <div class="about fade">
-      <div class="prose">
-        <p>My independent research asks how a robot with no wheels and no legs can learn to walk. I work on vibration-driven tensegrity robots, using <strong>Bayesian optimization</strong> to tune their gaits, computer vision to track how they move, and IMU telemetry to see what each strut is doing, so a single robot can adapt its locomotion across very different terrain.</p>
-        <p>Alongside that I build applied edge-AI hardware, most recently a Background-Oriented Schlieren sensor that turns invisible air flow and optical defects into images a small model can read on-device. I also write full-stack software, and away from the bench I'm usually thinking about the mechanics of a golf swing.</p>
+    <section class="cell" id="research" aria-labelledby="research-title">
+      <h2 id="research-title">Research &amp; work</h2>
+      <div class="list">
+        <details>
+          <summary><span class="t">Tensegrity Locomotion</span><span class="y">2026</span>
+            <span class="s">A vibration-driven tensegrity robot that tunes its own gait with Bayesian optimization. Computer vision tracking and IMU telemetry measure every trial, so the robot can adapt as the ground beneath it changes.</span></summary>
+          <p>The goal is cross-terrain gait adaptation: one robot, no wheels or legs, finding a way to move efficiently over surfaces it was never tuned for. A longer write-up and the code will be linked here.</p>
+        </details>
+        <details>
+          <summary><span class="t">Mirage Optical Sensor</span><span class="y">2026</span>
+            <span class="s">A modular Background-Oriented Schlieren imaging system paired with an edge-AI model. It makes thermal plumes and shielding-gas defects visible, so problems in manufacturing can be caught as they happen.</span></summary>
+          <p>Schlieren imaging reveals tiny changes in how air bends light. Mirage puts that technique into inexpensive, modular hardware and runs detection on the device itself. Build notes and results will be linked here.</p>
+        </details>
+        <details>
+          <summary><span class="t">Applied AI &amp; Full-Stack Systems</span><span class="y">2025</span>
+            <span class="s">Web and mobile tools built end to end in TypeScript, React, Python and C++. Most of them began as something I needed for my own research and grew from there.</span></summary>
+          <p>Selected projects will be listed here. In the meantime, the code is on <a href="https://github.com/pranavnaresh11-ui" target="_blank" rel="noopener">GitHub</a>.</p>
+        </details>
+        <details>
+          <summary><span class="t">Autonomous Robotics</span><span class="y">2024</span>
+            <span class="s">Mechanical design, wiring and autonomous code for FRC and VEX competition robots. It is where I learned that a machine is only as good as its least reliable connection.</span></summary>
+          <p>Seasons, robots and results will be added here.</p>
+        </details>
       </div>
-      <figure class="portrait">
-        <div class="frame"><img src="assets/pranav.png" alt="Black and white portrait of Pranav Naresh" width="264" height="491"></div>
-        <figcaption>FIG 01. — PRANAV NARESH</figcaption>
-      </figure>
-    </div>
-  </section>
+    </section>
 
-  <!-- Research & projects -->
-  <section class="col" id="research" aria-labelledby="research-title">
-    <header class="sec-head fade">
-      <span class="idx">02</span><h2 id="research-title">Selected Research &amp; Projects</h2>
-    </header>
-
-    <h3 class="group fade">Research</h3>
-    <ol class="index">
-      <li class="row fade">
-        <button class="row-head" aria-expanded="false" aria-controls="d1">
-          <span class="num">01</span>
-          <span class="what"><span class="title">Tensegrity Locomotion &amp; Cross-Terrain Gait Adaptation</span><span class="thesis">Tuning vibration-driven gaits so one robot can learn to cross many kinds of ground.</span></span>
-          <span class="tag">ROBOTICS</span><span class="arrow" aria-hidden="true">→</span>
-        </button>
-        <div class="drawer" id="d1"><div class="drawer-in">
-          <dl class="specs">
-            <div><dt>Methods</dt><dd>Bayesian optimization, computer vision tracking, IMU telemetry</dd></div>
-            <div><dt>Hardware</dt><dd>Vibration-driven tensegrity robot</dd></div>
-            <div><dt>Status</dt><dd>Ongoing independent research</dd></div>
-          </dl>
-          <div class="shot"><span>HARDWARE PHOTO</span></div>
-          <p class="links"><a href="#">GitHub →</a><a href="#">Paper →</a></p>
-        </div></div>
-      </li>
-      <li class="row fade">
-        <button class="row-head" aria-expanded="false" aria-controls="d2">
-          <span class="num">02</span>
-          <span class="what"><span class="title">Mirage: BOS Edge-AI Optical Sensor</span><span class="thesis">A low-cost Background-Oriented Schlieren sensor that finds invisible flow and defects on-device.</span></span>
-          <span class="tag">OPTICS / AI</span><span class="arrow" aria-hidden="true">→</span>
-        </button>
-        <div class="drawer" id="d2"><div class="drawer-in">
-          <dl class="specs">
-            <div><dt>Methods</dt><dd>Background-Oriented Schlieren imaging, on-device inference</dd></div>
-            <div><dt>Use</dt><dd>Optical defect detection, visualising heat and air flow</dd></div>
-            <div><dt>Status</dt><dd>Working prototype</dd></div>
-          </dl>
-          <div class="shot"><span>HARDWARE PHOTO</span></div>
-          <p class="links"><a href="#">GitHub →</a><a href="#">Paper →</a></p>
-        </div></div>
-      </li>
-    </ol>
-
-    <h3 class="group fade" id="work">Work</h3>
-    <ol class="index" start="3">
-      <li class="row fade">
-        <button class="row-head" aria-expanded="false" aria-controls="d3">
-          <span class="num">03</span>
-          <span class="what"><span class="title">Full-Stack &amp; Applied AI Systems</span><span class="thesis">Web apps and AI tools built end to end, from interface to inference.</span></span>
-          <span class="tag">SOFTWARE</span><span class="arrow" aria-hidden="true">→</span>
-        </button>
-        <div class="drawer" id="d3"><div class="drawer-in">
-          <dl class="specs">
-            <div><dt>Stack</dt><dd>React, TypeScript, C++, Python</dd></div>
-            <div><dt>Focus</dt><dd>Applied AI tools and full-stack products</dd></div>
-            <div><dt>Status</dt><dd>Selected projects to come</dd></div>
-          </dl>
-          <div class="shot"><span>SCREENSHOT</span></div>
-          <p class="links"><a href="https://github.com/pranavnaresh11-ui" target="_blank" rel="noopener">GitHub →</a></p>
-        </div></div>
-      </li>
-      <li class="row fade">
-        <button class="row-head" aria-expanded="false" aria-controls="d4">
-          <span class="num">04</span>
-          <span class="what"><span class="title">Autonomous &amp; Competitive Robotics</span><span class="thesis">Mechanical design and control software for FRC and VEX competition robots.</span></span>
-          <span class="tag">ROBOTICS</span><span class="arrow" aria-hidden="true">→</span>
-        </button>
-        <div class="drawer" id="d4"><div class="drawer-in">
-          <dl class="specs">
-            <div><dt>Programs</dt><dd>FIRST Robotics Competition, VEX Robotics</dd></div>
-            <div><dt>Role</dt><dd>Mechanical design and software</dd></div>
-            <div><dt>Status</dt><dd>Seasons and results to come</dd></div>
-          </dl>
-          <div class="shot"><span>ROBOT PHOTO</span></div>
-          <p class="links"><a href="#">GitHub →</a></p>
-        </div></div>
-      </li>
-    </ol>
-  </section>
-
-  <!-- Notes -->
-  <section class="col" id="notes" aria-labelledby="notes-title">
-    <header class="sec-head fade">
-      <span class="idx">03</span><h2 id="notes-title">Notes</h2>
-    </header>
-    <ol class="notes">
-      <li class="fade"><time datetime="2026-11">2026.11</time><a href="#">Why Tensegrity Robots Need Better Terrain Adaptation</a></li>
-      <li class="fade"><time datetime="2026-09">2026.09</time><a href="#">Detecting Invisible Heat Plumes with $185 of Hardware</a></li>
-      <li class="fade"><time datetime="2026-06">2026.06</time><a href="#">Mechanics in Motion: Robotics and the Golf Swing</a></li>
-    </ol>
-  </section>
+    <section class="cell" id="writing" aria-labelledby="writing-title">
+      <h2 id="writing-title">Writing</h2>
+      <ol class="essays">
+        <li><time datetime="2026-11">Nov 2026</time><a href="#">Teaching Tensegrity Structures to Walk on Unfamiliar Ground</a></li>
+        <li><time datetime="2026-10">Oct 2026</time><a href="#">Seeing Invisible Heat with $185 of Hardware</a></li>
+        <li><time datetime="2026-09">Sep 2026</time><a href="#">Notes on Mechanics: From Robot Gaits to a 7-Iron Swing</a></li>
+      </ol>
+    </section>
+  </div>
 </main>
 
-<footer class="foot">
+<footer class="grid foot">
   <span>© 2026 Pranav Naresh</span>
-  <nav aria-label="Contact">
-    <a href="mailto:pranav.naresh11@gmail.com">Email</a>
-    <a href="https://github.com/pranavnaresh11-ui" target="_blank" rel="noopener">GitHub</a>
-    <a href="https://www.linkedin.com/in/pranav-naresh/" target="_blank" rel="noopener">LinkedIn</a>
-  </nav>
+  <span aria-hidden="true"></span>
+  <span>Cary, North Carolina</span>
 </footer>
-
-<script src="main.js"></script>
 </body>
 </html>
