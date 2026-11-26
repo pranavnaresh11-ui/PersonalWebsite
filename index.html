@@ -17,7 +17,6 @@
   "name": "Pranav Naresh",
   "description": "Independent robotics researcher working on vibration-driven tensegrity robot locomotion, Background-Oriented Schlieren optical sensing and software.",
   "email": "mailto:pranav.naresh11@gmail.com",
-  "image": "assets/pranav.png",
   "address": { "@type": "PostalAddress", "addressLocality": "Cary", "addressRegion": "NC", "addressCountry": "US" },
   "sameAs": [
     "https://www.linkedin.com/in/pranav-naresh/",
@@ -36,10 +35,8 @@
 </script>
 </head>
 <body>
-<!-- Black, grey and red bands run the full height of the page; the layout's three columns sit on them -->
-<div class="bands" aria-hidden="true"></div>
-
-<header class="grid head">
+<!-- Each section is painted with black, grey and red bands; the bands turn between vertical and horizontal from one section to the next -->
+<header class="grid head v">
   <a class="name" href="#top">Pranav Naresh</a>
   <span aria-hidden="true"></span>
   <nav aria-label="Sections">
@@ -51,15 +48,14 @@
 </header>
 
 <main id="top">
-  <section class="grid hero" aria-labelledby="hero-title">
+  <section class="grid hero v" aria-labelledby="hero-title">
     <h1 id="hero-title">Pranav Naresh<br><em>Robotics, optics, &amp; adaptive systems.</em></h1>
     <p class="intro">I work on robots that move without wheels or legs: vibration-driven tensegrity structures that learn, through Bayesian optimization and careful measurement, how to cross ground they have never seen. I also build optical instruments, most recently a Background-Oriented Schlieren sensor that makes heat and gas flow visible to a small on-device model, along with the software that holds these projects together. When I'm away from the bench, I'm usually on a golf course, thinking about the mechanics of a swing.</p>
   </section>
 
-  <div class="grid body">
-    <section class="cell" id="about" aria-labelledby="about-title">
+  <div class="grid body h">
+    <section class="cell h" id="about" aria-labelledby="about-title">
       <h2 id="about-title">About</h2>
-      <img class="portrait" src="assets/pranav.png" alt="Portrait of Pranav Naresh" width="264" height="491">
       <p>I'm a student in Cary, North Carolina, doing independent robotics research alongside dual-enrollment college coursework.</p>
       <p>Most of my time goes to hardware: designing, wiring and testing the machines I study, then writing the code that measures them. My current focus is gait adaptation in tensegrity robots, and making the Mirage sensor small and inexpensive enough to be useful in manufacturing.</p>
       <p class="links">
@@ -69,7 +65,7 @@
       </p>
     </section>
 
-    <section class="cell" id="research" aria-labelledby="research-title">
+    <section class="cell v" id="research" aria-labelledby="research-title">
       <h2 id="research-title">Research &amp; work</h2>
       <div class="list">
         <details>
@@ -95,7 +91,7 @@
       </div>
     </section>
 
-    <section class="cell" id="writing" aria-labelledby="writing-title">
+    <section class="cell h" id="writing" aria-labelledby="writing-title">
       <h2 id="writing-title">Writing</h2>
       <ol class="essays">
         <li><time datetime="2026-11">Nov 2026</time><a href="#">Teaching Tensegrity Structures to Walk on Unfamiliar Ground</a></li>
@@ -106,7 +102,7 @@
   </div>
 </main>
 
-<footer class="grid foot">
+<footer class="grid foot v">
   <span>© 2026 Pranav Naresh</span>
   <span aria-hidden="true"></span>
   <span>Cary, North Carolina</span>

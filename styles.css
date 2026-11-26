@@ -20,8 +20,12 @@ body::after { content: ''; position: absolute; inset: 0; z-index: 10; pointer-ev
 h1, h2, p, ol { margin: 0; }
 ol { padding: 0; list-style: none; }
 
-/* Three full-bleed bands: black, grey, red. They cover the whole page height, so they never gap on phones when the browser bar hides */
-.bands { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, var(--black) 0 33.3333%, var(--grey) 33.3333% 66.6667%, var(--red) 66.6667% 100%); }
+/* Black, grey and red bands, full-bleed. Each section paints its own set and the orientation
+   alternates: vertical, then horizontal, then vertical again. */
+.v, .h { --bands: var(--black) 0 33.3333%, var(--grey) 33.3333% 66.6667%, var(--red) 66.6667% 100%; }
+.v { background: linear-gradient(90deg, var(--bands)); }
+.h { background: linear-gradient(180deg, var(--bands)); }
+.body > .cell { background: none; }
 
 /* The layout grid is the bands: three equal columns, each padded the same */
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -51,8 +55,6 @@ h2 { margin-bottom: 36px; font: 400 44px/1 var(--serif); letter-spacing: -.01em;
 .cell > p { color: var(--cream-muted); }
 .cell > p + p { margin-top: 1em; }
 
-/* About: the portrait sits on the black band with no frame */
-.portrait { display: block; width: min(100%, 264px); height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0; margin-bottom: 32px; filter: grayscale(1) contrast(1.2) brightness(1.05); mix-blend-mode: lighten; }
 .cell > .links { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 28px; }
 
 /* Research: a reading list; each entry opens in place */
@@ -83,6 +85,10 @@ details[open] .s::after { content: 'Less'; }
   :root { --pad: 24px; }
   .grid { grid-template-columns: 1fr; }
   .grid > [aria-hidden] { display: none; }
+  /* Stacked, each part of the content gets its own bands so the orientation keeps alternating */
+  .body.h { background: none; }
+  .body > .cell.h { background: linear-gradient(180deg, var(--bands)); }
+  .body > .cell.v { background: linear-gradient(90deg, var(--bands)); }
   .head { row-gap: 14px; padding: 28px 0; }
   .hero { padding: 72px 0 80px; row-gap: 40px; }
   .intro { grid-column: 1; font-size: 18px; }
