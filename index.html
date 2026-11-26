@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pranav Naresh</title>
-<meta name="description" content="Pranav Naresh works on robotics, optics and adaptive systems: vibration-driven tensegrity robot locomotion, Background-Oriented Schlieren optical sensing, and the software that connects them.">
+<meta name="description" content="Pranav Naresh researches vibration-driven tensegrity robot locomotion, builds Background-Oriented Schlieren optical sensors with edge AI, and writes the software that connects them.">
 <meta name="theme-color" content="#111111">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
   "@context": "https://schema.org",
   "@type": "Person",
   "name": "Pranav Naresh",
-  "description": "Independent robotics researcher working on vibration-driven tensegrity robot locomotion, Background-Oriented Schlieren optical sensing and software.",
+  "description": "Independent robotics researcher working on vibration-driven tensegrity robot locomotion, Background-Oriented Schlieren optical sensing with edge AI, and software.",
   "email": "mailto:pranav.naresh11@gmail.com",
   "image": "assets/pranav.png",
   "address": { "@type": "PostalAddress", "addressLocality": "Cary", "addressRegion": "NC", "addressCountry": "US" },
@@ -36,7 +36,7 @@
 </script>
 </head>
 <body>
-<!-- Black, grey and red bands run the full height of the page; the layout's three columns sit on them -->
+<!-- Black, grey and red bands, pinned behind the whole page; the layout's three columns sit on them -->
 <div class="bands" aria-hidden="true"></div>
 
 <header class="grid head">
@@ -50,66 +50,90 @@
   </nav>
 </header>
 
-<main id="top">
-  <section class="grid hero" aria-labelledby="hero-title">
-    <h1 id="hero-title">Pranav Naresh<br><em>Robotics, optics, &amp; adaptive systems.</em></h1>
-    <p class="intro">I work on robots that move without wheels or legs: vibration-driven tensegrity structures that learn, through Bayesian optimization and careful measurement, how to cross ground they have never seen. I also build optical instruments, most recently a Background-Oriented Schlieren sensor that makes heat and gas flow visible to a small on-device model, along with the software that holds these projects together. When I'm away from the bench, I'm usually on a golf course, thinking about the mechanics of a swing.</p>
+<main>
+  <!-- 1. Hero: the only section showing on load -->
+  <section class="sec grid hero on" id="top" aria-labelledby="hero-title">
+    <h1 id="hero-title" class="st">Pranav Naresh<br><em>Robotics, optics, &amp; adaptive systems.</em></h1>
+    <p class="intro st">I work on robots that move without wheels or legs: vibration-driven tensegrity structures that learn, through Bayesian optimization and careful measurement, how to cross ground they have never seen. I also build optical instruments that make heat and gas flow visible, along with the software that holds these projects together. Away from the bench, I'm usually on a golf course, thinking about the mechanics of a swing.</p>
+    <p class="cue" aria-hidden="true">Scroll ↓</p>
   </section>
 
-  <div class="grid body">
-    <section class="cell" id="about" aria-labelledby="about-title">
-      <h2 id="about-title">About</h2>
-      <img class="portrait" src="assets/pranav.png" alt="Portrait of Pranav Naresh" width="264" height="491">
-      <p>I'm a student in Cary, North Carolina, doing independent robotics research alongside dual-enrollment college coursework.</p>
-      <p>Most of my time goes to hardware: designing, wiring and testing the machines I study, then writing the code that measures them. My current focus is gait adaptation in tensegrity robots, and making the Mirage sensor small and inexpensive enough to be useful in manufacturing.</p>
-      <p class="links">
+  <!-- 2. About -->
+  <section class="sec grid about" id="about" aria-labelledby="about-title">
+    <div class="side">
+      <img class="portrait st" src="assets/pranav.png" alt="Portrait of Pranav Naresh" width="264" height="491">
+    </div>
+    <div class="main">
+      <h2 id="about-title" class="st">About</h2>
+      <hr class="rule st">
+      <p class="st">I'm a student in Cary, North Carolina, doing independent robotics research alongside dual-enrollment college coursework. Most of what I study I build first: I design the hardware, wire it and test it, then write the code that measures what it does.</p>
+      <p class="st">My current focus is gait adaptation in tensegrity robots, and an optical sensor called Mirage that I'd like to make small and inexpensive enough to be useful in manufacturing. I'm drawn to problems where the mechanics, the electronics and the software all have to be right at once.</p>
+      <p class="links st">
         <a href="https://github.com/pranavnaresh11-ui" target="_blank" rel="noopener">GitHub</a>
         <a href="https://www.linkedin.com/in/pranav-naresh/" target="_blank" rel="noopener">LinkedIn</a>
         <a href="mailto:pranav.naresh11@gmail.com">pranav.naresh11@gmail.com</a>
       </p>
-    </section>
+    </div>
+  </section>
 
-    <section class="cell" id="research" aria-labelledby="research-title">
-      <h2 id="research-title">Research &amp; work</h2>
+  <!-- 3. Research & work -->
+  <section class="sec grid research" id="research" aria-labelledby="research-title">
+    <div class="side">
+      <h2 id="research-title" class="st"><em>Research &amp; Work</em></h2>
+      <p class="note st">Everything here is built from the circuit board up.</p>
+    </div>
+    <div class="main">
+      <hr class="rule st">
       <div class="list">
-        <details>
+        <details class="st">
           <summary><span class="t">Tensegrity Locomotion</span><span class="y">2026</span>
-            <span class="s">A vibration-driven tensegrity robot that tunes its own gait with Bayesian optimization. Computer vision tracking and IMU telemetry measure every trial, so the robot can adapt as the ground beneath it changes.</span></summary>
-          <p>The goal is cross-terrain gait adaptation: one robot, no wheels or legs, finding a way to move efficiently over surfaces it was never tuned for. A longer write-up and the code will be linked here.</p>
+            <span class="s">A vibration-driven tensegrity robot that tunes its own gait with Bayesian optimization. Computer vision tracking and IMU telemetry measure every trial, so it can adapt as the ground beneath it changes.</span></summary>
+          <p>The goal is cross-terrain gait adaptation: one robot, with no wheels or legs, finding an efficient way to move over surfaces it was never tuned for. A longer write-up and the code will be linked here.</p>
         </details>
-        <details>
+        <details class="st">
           <summary><span class="t">Mirage Optical Sensor</span><span class="y">2026</span>
             <span class="s">A modular Background-Oriented Schlieren imaging system paired with an edge-AI model. It makes thermal plumes and shielding-gas defects visible, so problems in manufacturing can be caught as they happen.</span></summary>
-          <p>Schlieren imaging reveals tiny changes in how air bends light. Mirage puts that technique into inexpensive, modular hardware and runs detection on the device itself. Build notes and results will be linked here.</p>
+          <p>Schlieren imaging reveals small changes in how air bends light. Mirage puts the technique into inexpensive, modular hardware and runs detection on the device itself. Build notes and results will be linked here.</p>
         </details>
-        <details>
+        <details class="st">
           <summary><span class="t">Applied AI &amp; Full-Stack Systems</span><span class="y">2025</span>
-            <span class="s">Web and mobile tools built end to end in TypeScript, React, Python and C++. Most of them began as something I needed for my own research and grew from there.</span></summary>
+            <span class="s">Web and mobile tools built end to end in TypeScript, React, Python and C++. Most began as something my own research needed.</span></summary>
           <p>Selected projects will be listed here. In the meantime, the code is on <a href="https://github.com/pranavnaresh11-ui" target="_blank" rel="noopener">GitHub</a>.</p>
         </details>
-        <details>
+        <details class="st">
           <summary><span class="t">Autonomous Robotics</span><span class="y">2024</span>
-            <span class="s">Mechanical design, wiring and autonomous code for FRC and VEX competition robots. It is where I learned that a machine is only as good as its least reliable connection.</span></summary>
+            <span class="s">Mechanical design, electrical systems and autonomous code for FRC and VEX competition robots. It taught me that a machine is only as good as its least reliable connection.</span></summary>
           <p>Seasons, robots and results will be added here.</p>
         </details>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="cell" id="writing" aria-labelledby="writing-title">
-      <h2 id="writing-title">Writing</h2>
+  <!-- 4. Writing, contact and footer -->
+  <section class="sec grid writing" id="writing" aria-labelledby="writing-title">
+    <div class="side">
+      <h2 id="writing-title" class="st"><em>Writing &amp; Notes</em></h2>
+    </div>
+    <div class="essays-col">
+      <hr class="rule st">
       <ol class="essays">
-        <li><time datetime="2026-11">Nov 2026</time><a href="#">Teaching Tensegrity Structures to Walk on Unfamiliar Ground</a></li>
-        <li><time datetime="2026-10">Oct 2026</time><a href="#">Seeing Invisible Heat with $185 of Hardware</a></li>
-        <li><time datetime="2026-09">Sep 2026</time><a href="#">Notes on Mechanics: From Robot Gaits to a 7-Iron Swing</a></li>
+        <li class="st"><time datetime="2026-11">Nov 2026</time><a href="#">Teaching Tensegrity Structures to Walk on Unfamiliar Ground</a></li>
+        <li class="st"><time datetime="2026-10">Oct 2026</time><a href="#">Seeing Invisible Heat with $185 of Hardware</a></li>
+        <li class="st"><time datetime="2026-09">Sep 2026</time><a href="#">Notes on Mechanics: From Robot Gaits to a 7-Iron Swing</a></li>
       </ol>
-    </section>
-  </div>
+    </div>
+    <div class="contact">
+      <p class="st">If any of this is interesting to you, I'd be glad to hear from you.</p>
+      <p class="links st">
+        <a href="mailto:pranav.naresh11@gmail.com">pranav.naresh11@gmail.com</a>
+        <a href="https://github.com/pranavnaresh11-ui" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/pranav-naresh/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+      <footer class="foot st">© 2026 Pranav Naresh — Cary, North Carolina</footer>
+    </div>
+  </section>
 </main>
 
-<footer class="grid foot">
-  <span>© 2026 Pranav Naresh</span>
-  <span aria-hidden="true"></span>
-  <span>Cary, North Carolina</span>
-</footer>
+<script src="main.js"></script>
 </body>
 </html>
