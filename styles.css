@@ -55,10 +55,9 @@ h1 em, h2 em { font-style: italic; }
 .cue { position: absolute; left: var(--pad); bottom: 36px; font-size: 16px; color: var(--cream-muted); transition: opacity .5s var(--ease); }
 .cue.gone { opacity: 0; }
 
-/* 2. About: portrait on the black band, text across grey and red */
+/* 2. About: the black band is left empty, text across grey and red */
 .about .main, .research .main { grid-column: 2 / 4; }
 .about h2 { margin-bottom: 28px; }
-.portrait { display: block; width: min(100%, 300px); height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 0; filter: grayscale(1) contrast(1.2) brightness(1.05); mix-blend-mode: lighten; }
 
 /* 3. Research: heading on black, reading index across grey and red */
 .note { margin-top: 20px; max-width: 16em; color: var(--cream-muted); }
@@ -109,7 +108,6 @@ details[open] .s::after { content: 'Less'; }
   .sec { padding-top: 136px; padding-bottom: 72px; row-gap: 36px; }
   .intro { grid-column: 1; font-size: 18px; }
   .about .main, .research .main { grid-column: 1; }
-  .portrait { width: min(70%, 240px); }
   .t { font-size: 27px; }
   .writing { row-gap: 40px; }
   .contact { padding-bottom: 56px; }
